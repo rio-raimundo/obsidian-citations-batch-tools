@@ -1,0 +1,1 @@
+""" File for 'global' variables to be used across files. """

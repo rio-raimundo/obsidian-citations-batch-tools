@@ -1,0 +1,9 @@
+{
+  "files.exclude": {
+    "LICENSE": true,
+    ".gitignore": true,
+    ".github": true,
+    ".git": true,
+    ".vscode": true
+  }
+}
