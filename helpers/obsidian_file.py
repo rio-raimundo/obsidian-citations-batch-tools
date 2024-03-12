@@ -10,6 +10,13 @@ class ObsidianFile():
         # Properties
         self.property_idxs, self.flat_properties = self.create_flat_properties()
         self.properties = self.create_property_dict_from_flat_properties()
+    
+    def __iter__(self):
+        return iter(self.contents)
+    def __getitem__(self, index):
+        return self.contents[index]
+    def __setitem__(self, index, value):
+        self.contents[index] = value
 
     def contents_list_from_filepath(self) -> list:
         """ Returns the contents of a file as a list."""

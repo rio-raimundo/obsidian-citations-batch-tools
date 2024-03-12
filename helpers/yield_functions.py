@@ -7,7 +7,7 @@ from helpers import ObsidianFile
 
 def yield_files(folder_path: str, extension: str):
     """ Yield all files with a given extension within a given folder, including subfolders."""
-    for root, dirs, files in os.walk(folder_path):
+    for root, _, files in os.walk(folder_path):
         for file_name in fnmatch.filter(files, f'*.{extension}'):
             file_path = os.path.join(root, file_name)
             yield file_path
@@ -20,4 +20,5 @@ def yield_papers(vault_path: str, limit: int =-1):
 
         file = ObsidianFile(filepath)
         if not file.property_contains_value('tags', 'paper'): continue
+        idx += 1
         yield file

@@ -3,19 +3,20 @@ from helpers import ObsidianFile, yield_papers
 
 def toggle_abstract_collapsing(vault_path: str, become_open: bool, limit: int = -1, copy_files: bool = False):
     """ Toggles open and closed abstract headers in each paper in a vault. """
-    for obsidian_file in yield_papers(vault_path, limit=limit):
-        obsidian_file: ObsidianFile
+    for file in yield_papers(vault_path, limit=limit):
+        file: ObsidianFile
 
         # Toggle abstract headers
-        for line in obsidian_file:
+        for idx, line in enumerate(file):
             line: str
             if not line.startswith("> [!my-abstract]"): continue
 
             # Toggle callout
             if become_open: line.replace("[!my-abstract]-", "[!my-abstract]+")
             else: line.replace("[!my-abstract]+", "[!my-abstract]-")
+            file[idx] = line  # replace lines
         
-        obsidian_file.write_file(copy=copy_files)
+        file.write_file(copy=copy_files)
 
 def update_zotero_links(vault_path: str, limit: int = -1, copy_files: bool = False):
     """ Update zotero links to the new format. """
