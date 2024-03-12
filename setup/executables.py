@@ -5,6 +5,7 @@ def toggle_abstract_collapsing(vault_path: str, become_open: bool, limit: int = 
     """ Toggles open and closed abstract headers in each paper in a vault. """
     for file in yield_papers(vault_path, limit=limit):
         file: ObsidianFile
+        if file.property_contains_value('tags', 'stub'): continue  # keep stubs unfolded
 
         # Toggle abstract headers
         for idx, line in enumerate(file):
@@ -12,9 +13,13 @@ def toggle_abstract_collapsing(vault_path: str, become_open: bool, limit: int = 
             if not line.startswith("> [!my-abstract]"): continue
 
             # Toggle callout
-            if become_open: line.replace("[!my-abstract]-", "[!my-abstract]+")
-            else: line.replace("[!my-abstract]+", "[!my-abstract]-")
-            file[idx] = line  # replace lines
+            if become_open:
+                print('here')
+                file[idx] = line.replace("[!my-abstract]-", "[!my-abstract]+")
+            else:
+                print('there')
+                file[idx] = line.replace("[!my-abstract]+", "[!my-abstract]-")
+            print(file[idx])
         
         file.write_file(copy=copy_files)
 
