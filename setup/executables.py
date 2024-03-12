@@ -14,12 +14,9 @@ def toggle_abstract_collapsing(vault_path: str, become_open: bool, limit: int = 
 
             # Toggle callout
             if become_open:
-                print('here')
                 file[idx] = line.replace("[!my-abstract]-", "[!my-abstract]+")
             else:
-                print('there')
                 file[idx] = line.replace("[!my-abstract]+", "[!my-abstract]-")
-            print(file[idx])
         
         file.write_file(copy=copy_files)
 
