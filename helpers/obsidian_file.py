@@ -68,8 +68,9 @@ class ObsidianFile():
                 self.flat_properties[idx] = line.replace(old_value, new_value)
                 break
 
-        # Recalculate properties dictionary
+        # Recalculate properties dictionary and update contents
         self.properties = self.create_property_dict_from_flat_properties()
+        self.update_properties_in_contents()  # Update contents after recalculating properties
     
     def update_properties_in_contents(self):
         """ Function to update the properties in the contents using flat properties. """

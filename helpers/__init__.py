@@ -2,8 +2,7 @@
 
 # from .[FILE] import [CALLABLE]
 
-from .yield_files import yield_files
 from .obsidian_file import ObsidianFile
-
+from .yield_functions import yield_files, yield_papers
 
 __all__ = []  # list as strings
