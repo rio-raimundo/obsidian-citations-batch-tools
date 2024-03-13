@@ -39,3 +39,25 @@ def update_zotero_links(vault_path: str, limit: int = -1, copy_files: bool = Fal
         new_zotero_link = f'zotero://select/items/@{citation_key}'
         file.replace_property_value(zotero_link, new_zotero_link)
         file.write_file(copy=copy_files)  # write files
+
+def update_DOIs_from_root_level_papers(vault_path: str, limit: int = -1):
+    """ Update broken DOI links using imported papers from the root level directory. """
+
+    for root_level_paper in yield_papers(vault_path, limit=limit, exclude_subfolders=True):
+        root_level_paper: ObsidianFile
+        
+        # Get new DOI
+        doi = root_level_paper.return_property_values('links')[0]
+        
+        # Find corresponding paper in the vault by matching citation key
+        citation_key = root_level_paper.return_property_values('citation key')[0]
+        
+        for matching_paper in yield_papers(vault_path):
+            matching_paper: ObsidianFile
+            old_link = matching_paper.return_property_values('links')[0]
+
+            if matching_paper.return_property_values('citation key')[0] == citation_key and old_link != doi:
+                print('yippee!')
+                matching_paper.replace_property_value(old_link, doi)
+                matching_paper.write_file()
+                break  # matching paper found, no need to keep iterating

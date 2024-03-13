@@ -72,6 +72,7 @@ class ObsidianFile():
         # Update flat properties
         for idx, line in enumerate(self.flat_properties):
             if old_value in line:
+                line: str
                 self.flat_properties[idx] = line.replace(old_value, new_value)
                 break
 
