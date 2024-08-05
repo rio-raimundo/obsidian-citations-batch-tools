@@ -49,12 +49,25 @@ class ObsidianFile():
             if line.endswith(':') or ': ' in line:
                 key, spillover = line.split(':', 1)
                 current_key = key.lower()
+
                 property_dict[current_key] = []
                 if spillover: property_dict[current_key].append(spillover[1:])
             # If 'value' line
             else:
                 property_dict[current_key].append(line.lstrip('- '))
         return property_dict
+    
+    def make_properties_lowercase(self):
+        if not self.property_idxs: return
+
+        for idx, line in enumerate(self.flat_properties):
+            line: str
+
+            if line.endswith(':') or ': ' in line:
+                key, _ = line.split(':', 1)
+
+                # Make all property names in modified files lowercase.
+                self.flat_properties[idx] = line.replace(key, key.lower())
 
     def property_contains_value(self, prop: str, value: str) -> bool:
         """ Identify if a given value is associated with a given value. """

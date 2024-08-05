@@ -25,7 +25,7 @@ def update_zotero_links(vault_path: str, limit: int = -1, copy_files: bool = Fal
 
     for file in yield_papers(vault_path, limit=limit):
         file: ObsidianFile
-
+        
         # Find citation key and zotero link
         citation_key = file.return_property_values('citation key')[0]
         
@@ -38,6 +38,14 @@ def update_zotero_links(vault_path: str, limit: int = -1, copy_files: bool = Fal
         # Replace and update properties
         new_zotero_link = f'zotero://select/items/@{citation_key}'
         file.replace_property_value(zotero_link, new_zotero_link)
+        file.write_file(copy=copy_files)  # write files
+
+def change_tags_to_lowercase(vault_path: str, limit: int = -1, copy_files: bool = False):
+    """ Change the word 'Tags' in the properties to 'tags', meaning that tags come up in search results. """
+
+    for file in yield_papers(vault_path, limit=limit):
+        file: ObsidianFile
+        file.make_properties_lowercase()
         file.write_file(copy=copy_files)  # write files
 
 def update_DOIs_from_root_level_papers(vault_path: str, limit: int = -1):
