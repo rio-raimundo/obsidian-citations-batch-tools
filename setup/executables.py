@@ -1,5 +1,7 @@
 # %%
-from helpers import ObsidianFile
+from concurrent import futures
+
+from helpers import ObsidianFile, doi_from_citation_key
 from . import yield_papers
 
 def toggle_abstract_collapsing(become_open: bool, limit: int = -1, copy_files: bool = False):
@@ -98,3 +100,25 @@ def update_DOIs_from_root_level_papers(limit: int = -1):
                 matching_paper.replace_property_value(old_link, doi)
                 matching_paper.write_file()
                 break  # matching paper found, no need to keep iterating
+
+def add_missing_dois(limit: int = -1, copy_files: bool = False):
+    """ Add missing DOIs to papers in the vault. """
+    papers = []
+    for paper in yield_papers():
+        if len(papers) == limit: break
+        paper: ObsidianFile
+        if paper.properties.get('doi', False) is False: return
+        if paper.properties['doi'] is None: papers.append(paper)
+
+    def get_doi(paper: ObsidianFile):
+        doi = doi_from_citation_key(paper.properties['citation key'])
+        print(f"Updating {paper.properties['citation key']:15} with doi {doi}")
+        paper.properties['doi'] = doi
+        paper.update_flat_properties_from_properties_dict()
+        paper.write_file(copy=copy_files)
+
+    # Split into threads bc the API request cna take ages
+    executor = futures.ThreadPoolExecutor()
+    threads = [executor.submit(get_doi, paper) for paper in papers]
+    futures.wait(threads)
+    print('done!')

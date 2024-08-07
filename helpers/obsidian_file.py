@@ -51,13 +51,17 @@ class ObsidianFile():
                 current_key = key.lower()
 
                 if spillover.strip(): property_dict[current_key] = spillover.lstrip()
-                else: property_dict[current_key] = []
+                else: property_dict[current_key] = None
 
             # If 'value' line, append it to list if it is one
             else:
                 if type(property_dict[current_key]) == str:
                     print(f"Warning: {self.filepath} has multiple values for non-list key {current_key}.")
                     continue
+                    
+                # Check if set to default null value
+                if property_dict.get(current_key) is None:
+                    property_dict[current_key] = []
                 property_dict[current_key].append(line.lstrip('- '))
         return property_dict
 
@@ -66,7 +70,9 @@ class ObsidianFile():
         flat_properties = []
 
         for property, values in self.properties.items():
-            if type(values) == str:
+            if values is None:
+                flat_properties.append(f"{property}: ")
+            elif type(values) == str:
                 flat_properties.append(f"{property}: {values}")
             else:
                 flat_properties.append(f"{property}:")
