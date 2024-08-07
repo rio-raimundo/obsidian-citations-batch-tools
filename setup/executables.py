@@ -23,6 +23,59 @@ def toggle_abstract_collapsing(become_open: bool, limit: int = -1, copy_files: b
         
         file.write_file(copy=copy_files)
 
+def add_author_names_as_tags(limit: int = -1, copy_files: bool = False):
+    for paper in yield_papers(limit=-1):
+        paper: ObsidianFile
+
+        # Extract authors
+        authors = paper.properties.get('authors', None)
+        if authors is None: continue
+
+        for author in authors:
+            author: str = author.lower()
+
+            # Need to format the author page as a string
+            parts = author.split(' ')
+
+            # First we remove parts with periods
+            parts = [part for part in parts if '.' not in part]
+
+            # Then we remove leftover single letters
+            parts = [part for part in parts if len(part) > 1]
+
+            # Sanity check code to make sure we don't have any weird characters
+            # for part in parts:
+            #     for letter in part:
+            #         if letter not in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']:
+            #             print(parts)
+
+            tag = 'authors/' + '-'.join(parts)
+            if tag in paper.properties.get('tags', []): continue
+            paper.properties['tags'].append(tag)
+
+        paper.update_flat_properties_from_properties_dict()
+        paper.write_file()
+
+def reorder_properties(limit: int = -1, copy_files: bool = False):
+    properties_order = [
+        'title',
+        'tags',
+        'zotero',
+        'doi',
+        'authors',
+        'citation key',
+    ]
+
+    for paper in yield_papers(limit=limit):
+        paper: ObsidianFile
+
+        for key, value in paper.properties.items():
+            listed_properties = {k: paper.properties[k] for k in properties_order if k in paper.properties}
+            unlisted_properties = {k: v for k, v in paper.properties.items() if k not in properties_order}
+            paper.properties = listed_properties | unlisted_properties
+            paper.update_flat_properties_from_properties_dict()
+            paper.write_file(copy=copy_files)
+
 def split_links_property(limit: int = -1, copy_files: bool = False):
     """ Split old format 'links' property into 'DOI' and 'Zotero' properties. """
 
