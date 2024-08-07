@@ -40,7 +40,7 @@ class ObsidianFile():
         if not self.property_idxs: return {}  # return empty
 
         # Create grouped properties from flat property list
-        property_dict: dict[str, list[str]] = {}
+        property_dict: dict[str, str | list[str]] = {}
         current_key = ""
         for line in self.flat_properties:
             line: str
@@ -50,11 +50,14 @@ class ObsidianFile():
                 key, spillover = line.split(':', 1)
                 current_key = key.lower()
 
-                property_dict[current_key] = []
-                if spillover: property_dict[current_key].append(spillover[1:])
-            # If 'value' line
+                if spillover.strip(): property_dict[current_key] = spillover.lstrip()
+                else: property_dict[current_key] = []
 
+            # If 'value' line, append it to list if it is one
             else:
+                if type(property_dict[current_key]) == str:
+                    print(f"Warning: {self.filepath} has multiple values for non-list key {current_key}.")
+                    continue
                 property_dict[current_key].append(line.lstrip('- '))
         return property_dict
 
@@ -63,8 +66,8 @@ class ObsidianFile():
         flat_properties = []
 
         for property, values in self.properties.items():
-            if len(values) == 1:
-                flat_properties.append(f"{property}: {values[0]}")
+            if type(values) == str:
+                flat_properties.append(f"{property}: {values}")
             else:
                 flat_properties.append(f"{property}:")
                 for value in values: flat_properties.append(f"  - {value}")

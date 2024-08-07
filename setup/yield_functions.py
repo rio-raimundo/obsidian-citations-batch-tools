@@ -4,6 +4,7 @@ import os
 import fnmatch
 
 from helpers import ObsidianFile
+import constants as c
 
 def yield_files(folder_path: str, extension: str, exclude_subfolders: bool = False):
     """ Yield all files with a given extension within a given folder."""
@@ -17,13 +18,24 @@ def yield_files(folder_path: str, extension: str, exclude_subfolders: bool = Fal
             file_path = os.path.join(root, file_name)
             yield file_path
 
-def yield_papers(vault_path: str, limit: int = -1, exclude_subfolders: bool = False):
+def yield_papers(limit: int = -1, exclude_subfolders: bool = False):
     """ Yields each paper in a vault as ObsidianFile object. """
     idx = 0
-    for filepath in yield_files(vault_path, 'md', exclude_subfolders):
+    for filepath in yield_files(c.vault_path, 'md', exclude_subfolders):
+        
+        # Ignore files in excluded folders
+        should_continue = False
+        for excluded_folder in c.excluded_folders:
+            if filepath.startswith(excluded_folder):
+                should_continue = True
+        if should_continue: continue
+
+        # Limit number of files
         if limit > 0 and idx >= limit: break
 
         file = ObsidianFile(filepath)
-        if not file.property_contains_value('tags', 'paper'): continue
+        if not file.property_contains_value('tags', 'paper') and not file.property_contains_value('tags', 'book'): continue
         idx += 1
         yield file
+    
+    print("Finished yielding papers!")
