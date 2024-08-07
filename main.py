@@ -1,7 +1,8 @@
 # %%
 """ File from which to run the project (runs with f8) """
 
+from helpers import yield_papers, ObsidianFile
 import constants as c
-from setup import toggle_abstract_collapsing, update_zotero_links, update_DOIs_from_root_level_papers, change_tags_to_lowercase
+from setup import split_links_property
 
-change_tags_to_lowercase(c.vault_path, copy_files=False)
+split_links_property(c.vault_path, copy_files=False, limit=-1)

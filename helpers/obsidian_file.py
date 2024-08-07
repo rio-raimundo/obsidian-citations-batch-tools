@@ -53,9 +53,22 @@ class ObsidianFile():
                 property_dict[current_key] = []
                 if spillover: property_dict[current_key].append(spillover[1:])
             # If 'value' line
+
             else:
                 property_dict[current_key].append(line.lstrip('- '))
         return property_dict
+
+    def update_flat_properties_from_properties_dict(self):
+        """ Update flat properties class value from properties dictionary. Does not return anything. """
+        flat_properties = []
+
+        for property, values in self.properties.items():
+            if len(values) == 1:
+                flat_properties.append(f"{property}: {values[0]}")
+            else:
+                flat_properties.append(f"{property}:")
+                for value in values: flat_properties.append(f"  - {value}")
+        self.flat_properties = flat_properties
     
     def make_properties_lowercase(self):
         if not self.property_idxs: return

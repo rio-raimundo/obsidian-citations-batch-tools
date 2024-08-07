@@ -4,5 +4,6 @@
 
 from .obsidian_file import ObsidianFile
 from .yield_functions import yield_files, yield_papers
+from .zotero_queries import doi_from_citation_key
 
 __all__ = []  # list as strings

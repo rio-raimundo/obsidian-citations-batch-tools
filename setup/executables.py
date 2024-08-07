@@ -48,6 +48,35 @@ def change_tags_to_lowercase(vault_path: str, limit: int = -1, copy_files: bool 
         file.make_properties_lowercase()
         file.write_file(copy=copy_files)  # write files
 
+def split_links_property(vault_path: str, limit: int = -1, copy_files: bool = False):
+    """ Split old format 'links' property into 'DOI' and 'Zotero' properties. """
+
+    for paper in yield_papers(vault_path, limit=limit):
+        paper: ObsidianFile
+
+        def find_first_starting_with(items: list[str], string: str):
+            """ Find the first item in a list that starts with a given string. If none, returns empty string. """
+            legal = [item for item in items if item.startswith(string)]
+            if len(legal) == 0: return ""
+            return legal[0]
+
+        # Skip 'new' format papers which do not have links property
+        try:
+            links = paper.return_property_values('links')
+        except KeyError:
+            continue
+        
+        # Find relevant parameters
+        doi = find_first_starting_with(links, 'https://doi.org/')
+        zotero = find_first_starting_with(links, 'zotero')
+
+        # Can modify file.properties directly and then update flat properties
+        del paper.properties['links']
+        paper.properties['doi'] = [doi] if doi else []
+        paper.properties['zotero'] = [zotero] if zotero else []
+        paper.update_flat_properties_from_properties_dict()
+        paper.write_file(copy=copy_files)
+
 def update_DOIs_from_root_level_papers(vault_path: str, limit: int = -1):
     """ Update broken DOI links using imported papers from the root level directory. """
 
@@ -65,7 +94,6 @@ def update_DOIs_from_root_level_papers(vault_path: str, limit: int = -1):
             old_link = matching_paper.return_property_values('links')[0]
 
             if matching_paper.return_property_values('citation key')[0] == citation_key and old_link != doi:
-                print('yippee!')
                 matching_paper.replace_property_value(old_link, doi)
                 matching_paper.write_file()
                 break  # matching paper found, no need to keep iterating
