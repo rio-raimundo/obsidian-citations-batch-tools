@@ -6,3 +6,8 @@ import constants as c
 from setup import yield_papers, split_links_property, add_missing_dois, reorder_properties
 
 # Add names as author tags
+
+for paper in yield_papers(limit=1):
+    paper: ObsidianFile = paper
+
+

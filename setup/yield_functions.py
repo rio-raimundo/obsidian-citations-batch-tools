@@ -20,14 +20,20 @@ def yield_files(folder_path: str, extension: str, exclude_subfolders: bool = Fal
 
 def yield_papers(limit: int = -1, exclude_subfolders: bool = False):
     """ Yields each paper in a vault as ObsidianFile object. """
+    # Check if folder exists
+    if not os.path.exists(c.vault_path):
+        raise FileNotFoundError(f"Folder {c.vault_path} does not exist.")
+
     idx = 0
     for filepath in yield_files(c.vault_path, 'md', exclude_subfolders):
         
         # Ignore files in excluded folders
         should_continue = False
         for excluded_folder in c.excluded_folders:
-            if filepath.startswith(excluded_folder):
+            folderpath = os.path.join(c.vault_path, excluded_folder)
+            if filepath.startswith(folderpath):
                 should_continue = True
+                break
         if should_continue: continue
 
         # Limit number of files
