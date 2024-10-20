@@ -124,4 +124,4 @@ class ObsidianFile():
         self.update_properties_in_contents()  # update contents before writing
         filepath = self.filepath.replace('.md', '_copy.md') if copy else self.filepath
         with open(filepath, 'w', encoding='utf-8') as file:
-            file.writelines('\n'.join(self.contents))
+            file.writelines('\n'.join(self.contents) + '\n')

@@ -18,8 +18,8 @@ def yield_files(folder_path: str, extension: str, exclude_subfolders: bool = Fal
             file_path = os.path.join(root, file_name)
             yield file_path
 
-def yield_papers(limit: int = -1, exclude_subfolders: bool = False):
-    """ Yields each paper in a vault as ObsidianFile object. """
+def yield_articles(limit: int = -1, exclude_subfolders: bool = False):
+    """ Yields each article in a vault as ObsidianFile object. """
     # Check if folder exists
     if not os.path.exists(c.vault_path):
         raise FileNotFoundError(f"Folder {c.vault_path} does not exist.")
@@ -40,8 +40,8 @@ def yield_papers(limit: int = -1, exclude_subfolders: bool = False):
         if limit > 0 and idx >= limit: break
 
         file = ObsidianFile(filepath)
-        if not file.property_contains_value('tags', 'paper') and not file.property_contains_value('tags', 'book'): continue
+        if not file.property_contains_value('tags', 'article') and not file.property_contains_value('tags', 'book'): continue
         idx += 1
         yield file
     
-    print("Finished yielding papers!")
+    print("Finished yielding articles!")

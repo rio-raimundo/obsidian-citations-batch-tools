@@ -2,11 +2,11 @@
 from concurrent import futures
 
 from helpers import ObsidianFile, doi_from_citation_key
-from . import yield_papers
+from . import yield_articles
 
 def toggle_abstract_collapsing(become_open: bool, limit: int = -1, copy_files: bool = False):
     """ Toggles open and closed abstract headers in each paper in a vault. """
-    for file in yield_papers(limit=limit):
+    for file in yield_articles(limit=limit):
         file: ObsidianFile
         if file.property_contains_value('tags', 'stub'): continue  # keep stubs unfolded
 
@@ -24,7 +24,7 @@ def toggle_abstract_collapsing(become_open: bool, limit: int = -1, copy_files: b
         file.write_file(copy=copy_files)
 
 def add_author_names_as_tags(limit: int = -1, copy_files: bool = False):
-    for paper in yield_papers(limit=-1):
+    for paper in yield_articles(limit=-1):
         paper: ObsidianFile
 
         # Extract authors
@@ -66,7 +66,7 @@ def reorder_properties(limit: int = -1, copy_files: bool = False):
         'citation key',
     ]
 
-    for paper in yield_papers(limit=limit):
+    for paper in yield_articles(limit=limit):
         paper: ObsidianFile
 
         for key, value in paper.properties.items():
@@ -79,7 +79,7 @@ def reorder_properties(limit: int = -1, copy_files: bool = False):
 def split_links_property(limit: int = -1, copy_files: bool = False):
     """ Split old format 'links' property into 'DOI' and 'Zotero' properties. """
 
-    for paper in yield_papers(limit=limit):
+    for paper in yield_articles(limit=limit):
         paper: ObsidianFile
 
         def find_first_starting_with(items: list[str], string: str):
@@ -108,7 +108,7 @@ def split_links_property(limit: int = -1, copy_files: bool = False):
 def add_missing_dois(limit: int = -1, copy_files: bool = False):
     """ Add missing DOIs to papers in the vault. """
     papers = []
-    for paper in yield_papers():
+    for paper in yield_articles():
         if len(papers) == limit: break
         paper: ObsidianFile
         if paper.properties.get('doi', False) is False: return
