@@ -1,0 +1,1 @@
+A set of text tools written in Python for editing Obisidan note pages. Interfaces with the Citations Zotero plugin. Allows for renaming of files, reorganising properties (including tags), and more customisation options. Intended for personal use, so no documentation, and limited generalisability of code. 
