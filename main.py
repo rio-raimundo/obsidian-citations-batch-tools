@@ -5,8 +5,21 @@ from helpers import ObsidianFile, doi_from_citation_key
 import constants as c
 from setup import yield_articles, split_links_property, add_missing_dois, reorder_properties
 
-# Add names as author tags
+# Add archive tags to all papers
+for article in yield_articles(limit=-1):
+    article: ObsidianFile
 
+    # Add archived tag as second tag, after 'first tag'
+    tags: list = article.properties['tags']
+    if 'archived' not in tags:
+        tags = [tags.pop(0)] + ['archived'] + tags
+        article.properties['tags'] = tags
+    print(tags)
+
+    article.update_flat_properties_from_properties_dict()
+    article.write_file()
+
+# %%
 # Rename everything from paper to article
 
 # Put 'first tags' as the first tag
