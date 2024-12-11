@@ -11,6 +11,9 @@ excluded_folders = [r"\misc\zotero"]
 # For some of the functionality, you will need to link to a .bib file, which can be generated automatically using the BetterBibtex plugin in Zotero.
 relative_bibtex_location = r"misc\zotero\library.bib"
 
+# List of tags which will be used to identify articles. If a page contains one of these tags, it is treated as an article.
+article_tags = ["document/article", "document/book"]
+
 
 # AUTOMATIC SUPPORTING VARIABLES
 bibtext_location = join(vault_path, relative_bibtex_location)

@@ -40,7 +40,7 @@ def yield_articles(limit: int = -1, exclude_subfolders: bool = False):
         if limit > 0 and idx >= limit: break
 
         file = ObsidianArticle(filepath)
-        if not file.property_contains_value('tags', 'document/article') and not file.property_contains_value('tags', 'document/book'): continue
+        if not any([file.property_contains_value('tags', tag) for tag in c.article_tags]): continue
         idx += 1
         yield file
     
