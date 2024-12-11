@@ -8,9 +8,7 @@ from setup import yield_articles, split_links_property, add_missing_dois, reorde
 #! %load_ext autoreload
 #! %autoreload 3
 
-
 # %% 
-
 # Add archive tags to all papers
 for article in yield_articles(limit=-1):
     article: ObsidianArticle
@@ -51,17 +49,13 @@ for article in yield_articles(limit=-1):
 
 # %% 
 # Try to import and read the bibtex file
-from pybtex.database.input import bibtex
 
-#open a bibtex file
-parser = bibtex.Parser()
-bibdata = parser.parse_file(c.bibtext_location)
 
 # Find the publication journal in the object
 def get_journal_from_citation_key(citation_key: str) -> str:
-    if citation_key not in bibdata.entries: return None
-    if 'journal' not in bibdata.entries[citation_key].fields: return None
-    return bibdata.entries[citation_key].fields['journal']
+    if citation_key not in c.bibdata.entries: return None
+    if 'journal' not in c.bibdata.entries[citation_key].fields: return None
+    return c.bibdata.entries[citation_key].fields['journal']
 
 # Loop through entries, get their journal entry, and add it as a property?
 for article in yield_articles():

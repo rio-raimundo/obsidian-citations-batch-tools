@@ -1,5 +1,6 @@
 """ File for 'global' variables to be used across files. """
 from os.path import join
+from pybtex.database.input import bibtex
 
 # MANUALLY SET THESE VARIABLES
 # Absoulte path to the vault
@@ -14,6 +15,7 @@ relative_bibtex_location = r"misc\zotero\library.bib"
 # List of tags which will be used to identify articles. If a page contains one of these tags, it is treated as an article.
 article_tags = ["document/article", "document/book"]
 
-
 # AUTOMATIC SUPPORTING VARIABLES
+# Load the bibtex file
 bibtext_location = join(vault_path, relative_bibtex_location)
+bibdata = bibtex.Parser().parse_file(bibtext_location)
