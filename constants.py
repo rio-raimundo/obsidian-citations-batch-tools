@@ -7,6 +7,5 @@ excluded_folders = [r"\misc\zotero"]
 
 relative_bibtex_location = r"misc\zotero\library.bib"
 
-
 # Automatically set
 bibtext_location = join(vault_path, relative_bibtex_location)
