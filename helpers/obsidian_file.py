@@ -64,6 +64,19 @@ class ObsidianFile():
                     property_dict[current_key] = []
                 property_dict[current_key].append(line.lstrip('- '))
         return property_dict
+    
+    def insert_property(self, prop: str, value, location: int = -1):
+        """ Insert a new property into the file. Defaults to the end of the properties. Updates self.properties object. """
+        # Check if property already exists inside dictionary
+        if prop in self.properties:
+            print(f"Warning: '{self.filepath}' already has a property named '{prop}'.")
+            return
+
+        # Convert the dictionary to a list, insert the new property, and convert back to a dictionary
+        proplist = list(self.properties.items())
+        # Note, when using list.insert, -1 is the last element of the list
+        proplist.insert(location, (prop, value))
+        self.properties = dict(proplist)
 
     def update_flat_properties_from_properties_dict(self):
         """ Update flat properties class value from properties dictionary. Does not return anything. """
@@ -94,6 +107,8 @@ class ObsidianFile():
     def property_contains_value(self, prop: str, value: str) -> bool:
         """ Identify if a given value is associated with a given value. """
         if not self.properties: return False
+        if self.properties.get(prop) is None: return False
+
         prop, value = prop.lower(), value.lower()
         if prop not in self.properties: return False
         if value not in self.properties[prop]: return False
