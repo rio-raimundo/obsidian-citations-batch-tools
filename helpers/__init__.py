@@ -2,7 +2,7 @@
 
 # from .[FILE] import [CALLABLE]
 
-from .obsidian_file import ObsidianFile
+from .obsidian_article import ObsidianArticle
 from .zotero_queries import doi_from_citation_key
 
 __all__ = []  # list as strings

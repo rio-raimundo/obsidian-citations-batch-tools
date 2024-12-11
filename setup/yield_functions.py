@@ -3,7 +3,7 @@
 import os
 import fnmatch
 
-from helpers import ObsidianFile
+from helpers import ObsidianArticle
 import constants as c
 
 def yield_files(folder_path: str, extension: str, exclude_subfolders: bool = False):
@@ -39,7 +39,7 @@ def yield_articles(limit: int = -1, exclude_subfolders: bool = False):
         # Limit number of files
         if limit > 0 and idx >= limit: break
 
-        file = ObsidianFile(filepath)
+        file = ObsidianArticle(filepath)
         if not file.property_contains_value('tags', 'document/article') and not file.property_contains_value('tags', 'document/book'): continue
         idx += 1
         yield file

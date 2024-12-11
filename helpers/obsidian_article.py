@@ -1,6 +1,6 @@
 """ File for the ObsidianFile class. """
 
-class ObsidianFile():
+class ObsidianArticle():
     """ Class to store data about a single obsidian file. """
 
     def __init__(self, filepath: str):

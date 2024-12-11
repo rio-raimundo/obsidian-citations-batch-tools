@@ -1,7 +1,7 @@
 # %%
 """ File from which to run the project (runs with f8) """
 
-from helpers import ObsidianFile, doi_from_citation_key
+from helpers import ObsidianArticle, doi_from_citation_key
 import constants as c
 from setup import yield_articles, split_links_property, add_missing_dois, reorder_properties
 
@@ -13,7 +13,7 @@ from setup import yield_articles, split_links_property, add_missing_dois, reorde
 
 # Add archive tags to all papers
 for article in yield_articles(limit=-1):
-    article: ObsidianFile
+    article: ObsidianArticle
 
     # Add archived tag as second tag, after 'first tag'
     tags: list = article.properties['tags']
@@ -30,7 +30,7 @@ for article in yield_articles(limit=-1):
 
 # Put 'first tags' as the first tag
 for article in yield_articles(limit=-1):
-    article: ObsidianFile
+    article: ObsidianArticle
 
     tags: list = article.properties['tags']
     
@@ -65,7 +65,7 @@ def get_journal_from_citation_key(citation_key: str) -> str:
 
 # Loop through entries, get their journal entry, and add it as a property?
 for article in yield_articles():
-    article: ObsidianFile
+    article: ObsidianArticle
 
     if article.properties.get('journal') is None:
         citation_key = article.properties['citation key']
@@ -79,7 +79,7 @@ for article in yield_articles():
 # %%
 # Move the journal property to the top of the properties
 for article in yield_articles(limit=-1):
-    article: ObsidianFile
+    article: ObsidianArticle
 
     if article.properties.get('journal') is not None:
         journal = article.properties.pop('journal')
