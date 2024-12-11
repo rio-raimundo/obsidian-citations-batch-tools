@@ -74,3 +74,16 @@ for article in yield_articles():
     
     article.update_flat_properties_from_properties_dict()
     article.write_file()
+
+
+# %%
+# Move the journal property to the top of the properties
+for article in yield_articles(limit=-1):
+    article: ObsidianFile
+
+    if article.properties.get('journal') is not None:
+        journal = article.properties.pop('journal')
+        article.insert_property('journal', journal, 1)
+    
+    article.update_flat_properties_from_properties_dict()
+    article.write_file()
