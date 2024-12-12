@@ -1,5 +1,3 @@
-attrs
 ipykernel
-pyzotero
 pybtex
 setuptools

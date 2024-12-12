@@ -1,25 +1,17 @@
 # %%
 #! %load_ext autoreload
 #! %autoreload 3
+""" Main file from which to run the project."""
 
-""" File from which to run the project.
-
-    Example usage:
-
-    @process_articles(limit=20, exclude_subfolders=False)
-    def YOUR_FUNCTION(obsidian_note: ObsidianNote):
-        EXECUTE YOUR CODE HERE
-
-    # call your function here
-    test_decorator()
-
-"""
 from helpers import ObsidianNote, process_articles
-import constants as c
 
-@process_articles(limit=20, exclude_subfolders=False)
-def test_decorator(obsidian_note: ObsidianNote):
-    """ Move tags to the start of the file. """
-    obsidian_note.insert_property_at_location('bobo', 'bozo', 0)
+""" EXAMPLE USAGE OF THE CODE. """
+# First call the decorator to process the articles, with arguments as needed (defaults used here)
+# Then define your custom function and what it should do with each ObsidianNote (article) object
+@process_articles(limit=-1, exclude_subfolders=False, make_copies=False)
+def add_custom_property(obsidian_note: ObsidianNote):
+    """ Example function that adds the custom property 'modified' to the end of each note. """
+    obsidian_note.insert_property_at_location('modified', 'Yes', location=-1)
 
-test_decorator()
+# Finally, call your function to execute it for the specified number of articles in a vault
+add_custom_property()
