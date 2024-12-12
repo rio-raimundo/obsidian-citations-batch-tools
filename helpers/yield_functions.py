@@ -40,16 +40,26 @@ def yield_articles(limit: int = -1, exclude_subfolders: bool = False):
         if limit > 0 and idx >= limit: break
 
         obsidian_note: ObsidianNote = ObsidianNote(filepath)
+
+        check1 = obsidian_note.property_contains_value('tags', 'document/article')
+        if check1 == True:
+            pass
+        check2 = any([obsidian_note.property_contains_value('tags', tag) for tag in c.article_tags])
+        if check2 == True: 
+            pass
+        pass
+
         if not any([obsidian_note.property_contains_value('tags', tag) for tag in c.article_tags]): continue
         idx += 1
         yield obsidian_note
 
-def process_articles(limit=-1, exclude_subfolders=False):
+def process_articles(limit: int = -1, exclude_subfolders: bool = False, make_copies: bool = False):
     """ Decorator factory to run a function across all Obsidian article files in a vault.
     
     Args:
         limit (int): The number of files to process. If negative, will process all files.
         exclude_subfolders (bool): Whether to exclude subfolders of the main folder.
+        make_copies (bool): Whether to write the updated file to a new file. If True, new file will be written with the same name as the original file with '_copy' appended.
     
     Returns:
         function: A function which takes the same arguments as the supplied function and runs it on each file.
@@ -64,10 +74,9 @@ def process_articles(limit=-1, exclude_subfolders=False):
             function: A function which takes the same arguments as the supplied function and runs it on each file.
         """
         def wrapper(*args, **kwargs):
-            for file in yield_articles(limit, exclude_subfolders):
-                print('hello')
-                print(file)
-                func(file, *args, **kwargs)
+            for obsidian_article in yield_articles(limit, exclude_subfolders):
+                func(obsidian_article, *args, **kwargs)
+                obsidian_article.write_file(make_copies)
             print("Finished processing articles!")
         return wrapper
     return decorator

@@ -170,6 +170,7 @@ class ObsidianNote():
 
         # Find indexes for first two instances of '---' line to identify properties
         for line_idx, line in enumerate(file_contents):
+            if line_idx == 0: continue
             if line.startswith("---"): break
         else: 
             return default  # return default if properties are not found (no closing '---' line)
