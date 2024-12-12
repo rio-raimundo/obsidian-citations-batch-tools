@@ -1,4 +1,4 @@
-""" File for 'global' variables to be used across files. """
+""" Constnats file for 'global' variables to be used across files. Variables will be need to be set manually for each device, as it currently stands. """
 from os.path import join
 from pybtex.database.input import bibtex
 

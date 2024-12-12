@@ -1,9 +1,8 @@
 # %%
 """ File from which to run the project (runs with f8) """
 
-from helpers import ObsidianNote, doi_from_citation_key
+from helpers import ObsidianNote
 import constants as c
-from setup import yield_articles, split_links_property, add_missing_dois, reorder_properties
 
 #! %load_ext autoreload
 #! %autoreload 3
