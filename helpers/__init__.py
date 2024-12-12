@@ -4,6 +4,6 @@
 
 from .obsidian_note import ObsidianNote
 from .yield_functions import yield_files, yield_articles
-from .examples import *
+from .general_functions import *
 
 __all__ = []  # list as strings

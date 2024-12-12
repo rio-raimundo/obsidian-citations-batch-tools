@@ -19,3 +19,4 @@ article_tags = ["document/article", "document/book"]
 # Load the bibtex file
 bibtext_location = join(vault_path, relative_bibtex_location)
 bibdata = bibtex.Parser().parse_file(bibtext_location)
+bibdata_entries = bibdata.entries

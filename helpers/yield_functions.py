@@ -39,9 +39,22 @@ def yield_articles(limit: int = -1, exclude_subfolders: bool = False):
         # Limit number of files
         if limit > 0 and idx >= limit: break
 
-        file = ObsidianNote(filepath)
-        if not any([file.property_contains_value('tags', tag) for tag in c.article_tags]): continue
+        obsidian_note: ObsidianNote = ObsidianNote(filepath)
+        if not any([obsidian_note.property_contains_value('tags', tag) for tag in c.article_tags]): continue
         idx += 1
-        yield file
+        yield obsidian_note
+
+def process_articles(func):
+    """ Decorator to run a function across all Obsidian article files in a vault.
     
-    print("Finished yielding articles!")
+    Args:
+        func (function): The function to run on each file.
+    
+    Returns:
+        function: A function which takes the same arguments as the supplied function and runs it on each file.
+    """
+    def wrapper(*args, **kwargs):
+        for file in yield_articles():
+            func(file, *args, **kwargs)
+        print("Finished processing articles!")
+    return wrapper
