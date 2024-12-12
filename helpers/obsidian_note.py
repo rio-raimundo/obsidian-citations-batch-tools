@@ -1,4 +1,5 @@
 """ File for the ObsidianNote class. """
+import logging
 
 class ObsidianNote():
     """
@@ -38,7 +39,7 @@ class ObsidianNote():
     @properties_dict.setter
     def properties_dict(self, value: dict[str, str | list[str]]):
         self._properties_dict = value
-        self._flat_properties = self.flat_properties_from_dict()
+        self._flat_properties = self._flat_properties_from_dict()
 
     def _split_file_contents(self, file_contents: list[str]) -> list:
         """ Splits the contents of the file into a list of 'flat' properties and a list of body text. """
@@ -54,11 +55,20 @@ class ObsidianNote():
         # If properties found, return the properties and body text (excluding '---' lines)
         return file_contents[1: line_idx], file_contents[line_idx+1:]
     
-    def _properties_dict_from_flat(self, flat_properties: list[str] = None) -> dict:
+    def _properties_dict_from_flat(self, flat_properties: list[str]) -> dict[str, str | list[str]]:
         # Initialise properties dictionary
+        """ Converts a list of 'flat' properties into a dictionary of properties.
+
+        Args:
+            flat_properties (list[str], optional): The list of flat properties to convert.
+
+        Returns:
+            dict[str, str | list[str]]: A dictionary of properties, where each key is a property label and each value is either a single string (if the property has a single value) or a list of strings (if the property has multiple values).
+        """
         properties_dict: dict[str, str | list[str]] = {}
 
         # Iterate through each line in the flat properties and assign to dictionary
+        # There are two main types of properties: 'string' properties (for single values) and 'list' properties (for multiple values)
         for line in flat_properties:
             line: str
 
@@ -68,20 +78,53 @@ class ObsidianNote():
                 current_property_label = propery_label.lower()  # note that all labels are stored (and assigned) in lowercase
 
                 # If overflow has non-whitespace characters, assign it as the value of the current property
+                # Otherwise, assume it is an empty property and assign None
                 if text_overflow.strip(): properties_dict[current_property_label] = text_overflow.lstrip()
                 else: properties_dict[current_property_label] = None
 
-            # If 'value' line, append it to list if it is one
+            # If the line does not contain a property label, assume it is a value for the current property
             else:
+                # If another value is given for a 'string' property, log a warning and skip
                 if type(properties_dict[current_property_label]) == str:
-                    print(f"Warning: {self.filepath} has multiple values for non-list key {current_property_label}.")
+                    logging.warning(f"Warning: {self.filepath} has multiple values for non-list property {current_property_label}... skipping.")
                     continue
                     
-                # Check if set to default null value
-                if properties_dict.get(current_property_label) is None:
-                    properties_dict[current_property_label] = []
+                # Otherwise, append the value to the list of values for the current property
+                # If this is the first value being appended, the property should be converted to a list
+                if properties_dict[current_property_label] is None: properties_dict[current_property_label] = []
                 properties_dict[current_property_label].append(line.lstrip('- '))
+
         return properties_dict
+
+    def _flat_properties_from_dict(self, properties_dict: dict[str, str | list[str]]) -> list[str]:
+        """Converts a properties dictionary to a list of 'flat' properties.
+
+        Args:
+            properties_dict (dict[str, str | list[str]]): The dictionary of properties to convert.
+
+        Returns:
+            list[str]: A list of 'flat' properties where each property is represented as a string.
+        """
+        flat_properties = []
+        
+        # Iterate through each property in the dictionary and append to the flat properties list
+        for property, values in properties_dict.items():
+            property: str
+
+            # If the property has no values, assume it is an empty property
+            if values is None:
+                flat_properties.append(f"{property}: ")
+
+            # If the property has a single value, append on same line as a string
+            elif type(values) == str:
+                flat_properties.append(f"{property}: {values}")
+
+            # If the property has multiple values, append each value on a new line with a preceding indented dash
+            else:
+                flat_properties.append(f"{property}:")
+                for value in values:  flat_properties.append(f"  - {value}")
+        
+        return flat_properties
     
     def insert_property(self, prop: str, value, location: int = -1):
         """ Insert a new property into the file. Defaults to the end of the properties. Updates self.properties object. """
@@ -95,20 +138,6 @@ class ObsidianNote():
         # Note, when using list.insert, -1 is the last element of the list
         proplist.insert(location, (prop, value))
         self.properties_dict = dict(proplist)
-
-    def flat_properties_from_dict(self):
-        """ Update flat properties class value from properties dictionary. Does not return anything. """
-        flat_properties = []
-
-        for property, values in self.properties_dict.items():
-            if values is None:
-                flat_properties.append(f"{property}: ")
-            elif type(values) == str:
-                flat_properties.append(f"{property}: {values}")
-            else:
-                flat_properties.append(f"{property}:")
-                for value in values: flat_properties.append(f"  - {value}")
-        self.flat_properties = flat_properties
     
     def make_properties_lowercase(self):
         if not self.property_idxs: return

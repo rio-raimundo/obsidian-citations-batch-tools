@@ -20,7 +20,7 @@ for article in yield_articles(limit=-1):
         article.properties_dict['tags'] = tags
     print(tags)
 
-    article.flat_properties_from_dict()
+    article._flat_properties_from_dict()
     article.write_file()
 
 # %%
@@ -43,7 +43,7 @@ for article in yield_articles(limit=-1):
                     tags.pop(idx)
                     tags.insert(0, first_tag)
 
-    article.flat_properties_from_dict()
+    article._flat_properties_from_dict()
     article.write_file()
 
 
@@ -66,7 +66,7 @@ for article in yield_articles():
         journal = get_journal_from_citation_key(citation_key)
         article.insert_property('journal', journal, 2)
     
-    article.flat_properties_from_dict()
+    article._flat_properties_from_dict()
     article.write_file()
 
 
@@ -79,5 +79,5 @@ for article in yield_articles(limit=-1):
         journal = article.properties_dict.pop('journal')
         article.insert_property('journal', journal, 1)
     
-    article.flat_properties_from_dict()
+    article._flat_properties_from_dict()
     article.write_file()

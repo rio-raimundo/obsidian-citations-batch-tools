@@ -77,7 +77,7 @@ def add_author_names_as_tags(
             if tag in article.properties_dict.get('tags', []): continue
             article.properties_dict['tags'].append(tag)
 
-        article.flat_properties_from_dict()
+        article._flat_properties_from_dict()
         article.write_file(copy=copy_files)
 
 def reorder_properties(
@@ -102,7 +102,7 @@ def reorder_properties(
         listed_properties = {k: article.properties_dict[k] for k in properties_order if k in article.properties_dict}
         unlisted_properties = {k: v for k, v in article.properties_dict.items() if k not in properties_order}
         article.properties_dict = listed_properties | unlisted_properties
-        article.flat_properties_from_dict()
+        article._flat_properties_from_dict()
         article.write_file(copy=copy_files)
 
 def split_links_property(
@@ -149,7 +149,7 @@ def split_links_property(
         del paper.properties_dict['links']
         paper.properties_dict['doi'] = doi if doi else ""
         paper.properties_dict['zotero'] = zotero if zotero else ""
-        paper.flat_properties_from_dict()
+        paper._flat_properties_from_dict()
         paper.write_file(copy=copy_files)
 
 def add_missing_dois(
@@ -184,7 +184,7 @@ def add_missing_dois(
         doi = doi_from_citation_key(paper.properties_dict['citation key'])
         print(f"Updating {paper.properties_dict['citation key']:15} with doi {doi}")
         paper.properties_dict['doi'] = doi
-        paper.flat_properties_from_dict()
+        paper._flat_properties_from_dict()
         paper.write_file(copy=copy_files)
 
     # Split into threads because the API request can take a long time
