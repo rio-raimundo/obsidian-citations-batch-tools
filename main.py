@@ -1,7 +1,7 @@
 # %%
 """ File from which to run the project (runs with f8) """
 
-from helpers import ObsidianNote
+from helpers import ObsidianNote, yield_articles
 import constants as c
 
 #! %load_ext autoreload
