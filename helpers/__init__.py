@@ -3,6 +3,7 @@
 # from .[FILE] import [CALLABLE]
 
 from .obsidian_note import ObsidianNote
-from .zotero_queries import doi_from_citation_key
+from .yield_functions import yield_files, yield_articles
+from .examples import *
 
 __all__ = []  # list as strings

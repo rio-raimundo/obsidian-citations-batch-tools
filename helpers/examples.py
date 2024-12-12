@@ -2,8 +2,7 @@
 """ General use functions to make edits to article files in the vault. """
 from concurrent import futures
 
-from helpers import ObsidianNote, doi_from_citation_key
-from . import yield_articles
+from . import ObsidianNote, yield_articles
 
 def toggle_abstract_collapsing(
         become_open: bool,
@@ -151,44 +150,3 @@ def split_links_property(
         paper.properties_dict['zotero'] = zotero if zotero else ""
         paper._flat_properties_from_dict()
         paper.write_file(copy=copy_files)
-
-def add_missing_dois(
-        limit: int = -1,
-        copy_files: bool = False
-    ) -> None:
-    """Add missing DOIs to papers in the vault. Interfaces with the Zotero API to retrieve DOIs, which is a slower method. Faster with better bibtex.
-
-    Args:
-        limit (int): The number of papers to process. If negative, will process all papers.
-        copy_files (bool): Whether to write the updated file to a new file.
-
-    Returns:
-        None
-    """
-    papers = []
-    for paper in yield_articles():
-        if len(papers) == limit: 
-            break
-        paper: ObsidianNote
-        if paper.properties_dict.get('doi', False) is False: 
-            return
-        if paper.properties_dict['doi'] is None: 
-            papers.append(paper)
-
-    def get_doi(paper: ObsidianNote) -> None:
-        """Retrieve and update DOI for a paper.
-
-        Args:
-            paper (ObsidianFile): The paper object to update.
-        """
-        doi = doi_from_citation_key(paper.properties_dict['citation key'])
-        print(f"Updating {paper.properties_dict['citation key']:15} with doi {doi}")
-        paper.properties_dict['doi'] = doi
-        paper._flat_properties_from_dict()
-        paper.write_file(copy=copy_files)
-
-    # Split into threads because the API request can take a long time
-    executor = futures.ThreadPoolExecutor()
-    threads = [executor.submit(get_doi, paper) for paper in papers]
-    futures.wait(threads)
-    print('done!')
