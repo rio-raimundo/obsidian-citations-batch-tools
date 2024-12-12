@@ -58,7 +58,7 @@ def add_author_names_as_tags(
         article: ObsidianNote
 
         # Extract authors
-        authors: list[str] = article.properties.get('authors', None)
+        authors: list[str] = article.properties_dict.get('authors', None)
         if authors is None: continue
 
         for author in authors:
@@ -74,10 +74,10 @@ def add_author_names_as_tags(
             parts = [part for part in parts if len(part) > 1]
 
             tag: str = 'authors/' + '-'.join(parts)
-            if tag in article.properties.get('tags', []): continue
-            article.properties['tags'].append(tag)
+            if tag in article.properties_dict.get('tags', []): continue
+            article.properties_dict['tags'].append(tag)
 
-        article.update_flat_properties_from_properties_dict()
+        article.flat_properties_from_dict()
         article.write_file(copy=copy_files)
 
 def reorder_properties(
@@ -99,10 +99,10 @@ def reorder_properties(
     for article in yield_articles(limit=limit):
         article: ObsidianNote
 
-        listed_properties = {k: article.properties[k] for k in properties_order if k in article.properties}
-        unlisted_properties = {k: v for k, v in article.properties.items() if k not in properties_order}
-        article.properties = listed_properties | unlisted_properties
-        article.update_flat_properties_from_properties_dict()
+        listed_properties = {k: article.properties_dict[k] for k in properties_order if k in article.properties_dict}
+        unlisted_properties = {k: v for k, v in article.properties_dict.items() if k not in properties_order}
+        article.properties_dict = listed_properties | unlisted_properties
+        article.flat_properties_from_dict()
         article.write_file(copy=copy_files)
 
 def split_links_property(
@@ -146,10 +146,10 @@ def split_links_property(
         zotero = find_first_starting_with(links, 'zotero')
 
         # Can modify file.properties directly and then update flat properties
-        del paper.properties['links']
-        paper.properties['doi'] = doi if doi else ""
-        paper.properties['zotero'] = zotero if zotero else ""
-        paper.update_flat_properties_from_properties_dict()
+        del paper.properties_dict['links']
+        paper.properties_dict['doi'] = doi if doi else ""
+        paper.properties_dict['zotero'] = zotero if zotero else ""
+        paper.flat_properties_from_dict()
         paper.write_file(copy=copy_files)
 
 def add_missing_dois(
@@ -170,9 +170,9 @@ def add_missing_dois(
         if len(papers) == limit: 
             break
         paper: ObsidianNote
-        if paper.properties.get('doi', False) is False: 
+        if paper.properties_dict.get('doi', False) is False: 
             return
-        if paper.properties['doi'] is None: 
+        if paper.properties_dict['doi'] is None: 
             papers.append(paper)
 
     def get_doi(paper: ObsidianNote) -> None:
@@ -181,10 +181,10 @@ def add_missing_dois(
         Args:
             paper (ObsidianFile): The paper object to update.
         """
-        doi = doi_from_citation_key(paper.properties['citation key'])
-        print(f"Updating {paper.properties['citation key']:15} with doi {doi}")
-        paper.properties['doi'] = doi
-        paper.update_flat_properties_from_properties_dict()
+        doi = doi_from_citation_key(paper.properties_dict['citation key'])
+        print(f"Updating {paper.properties_dict['citation key']:15} with doi {doi}")
+        paper.properties_dict['doi'] = doi
+        paper.flat_properties_from_dict()
         paper.write_file(copy=copy_files)
 
     # Split into threads because the API request can take a long time

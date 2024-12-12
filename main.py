@@ -14,13 +14,13 @@ for article in yield_articles(limit=-1):
     article: ObsidianNote
 
     # Add archived tag as second tag, after 'first tag'
-    tags: list = article.properties['tags']
+    tags: list = article.properties_dict['tags']
     if 'archived' not in tags:
         tags = [tags.pop(0)] + ['archived'] + tags
-        article.properties['tags'] = tags
+        article.properties_dict['tags'] = tags
     print(tags)
 
-    article.update_flat_properties_from_properties_dict()
+    article.flat_properties_from_dict()
     article.write_file()
 
 # %%
@@ -30,7 +30,7 @@ for article in yield_articles(limit=-1):
 for article in yield_articles(limit=-1):
     article: ObsidianNote
 
-    tags: list = article.properties['tags']
+    tags: list = article.properties_dict['tags']
     
     # Rename paper tag to article
     first_tags = ['article', 'book']
@@ -43,7 +43,7 @@ for article in yield_articles(limit=-1):
                     tags.pop(idx)
                     tags.insert(0, first_tag)
 
-    article.update_flat_properties_from_properties_dict()
+    article.flat_properties_from_dict()
     article.write_file()
 
 
@@ -61,12 +61,12 @@ def get_journal_from_citation_key(citation_key: str) -> str:
 for article in yield_articles():
     article: ObsidianNote
 
-    if article.properties.get('journal') is None:
-        citation_key = article.properties['citation key']
+    if article.properties_dict.get('journal') is None:
+        citation_key = article.properties_dict['citation key']
         journal = get_journal_from_citation_key(citation_key)
         article.insert_property('journal', journal, 2)
     
-    article.update_flat_properties_from_properties_dict()
+    article.flat_properties_from_dict()
     article.write_file()
 
 
@@ -75,9 +75,9 @@ for article in yield_articles():
 for article in yield_articles(limit=-1):
     article: ObsidianNote
 
-    if article.properties.get('journal') is not None:
-        journal = article.properties.pop('journal')
+    if article.properties_dict.get('journal') is not None:
+        journal = article.properties_dict.pop('journal')
         article.insert_property('journal', journal, 1)
     
-    article.update_flat_properties_from_properties_dict()
+    article.flat_properties_from_dict()
     article.write_file()
