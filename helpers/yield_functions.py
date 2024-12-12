@@ -44,17 +44,30 @@ def yield_articles(limit: int = -1, exclude_subfolders: bool = False):
         idx += 1
         yield obsidian_note
 
-def process_articles(func):
-    """ Decorator to run a function across all Obsidian article files in a vault.
+def process_articles(limit=-1, exclude_subfolders=False):
+    """ Decorator factory to run a function across all Obsidian article files in a vault.
     
     Args:
-        func (function): The function to run on each file.
+        limit (int): The number of files to process. If negative, will process all files.
+        exclude_subfolders (bool): Whether to exclude subfolders of the main folder.
     
     Returns:
         function: A function which takes the same arguments as the supplied function and runs it on each file.
     """
-    def wrapper(*args, **kwargs):
-        for file in yield_articles():
-            func(file, *args, **kwargs)
-        print("Finished processing articles!")
-    return wrapper
+    def decorator(func):
+        """ Decorator to run a function across all Obsidian article files in a vault.
+        
+        Args:
+            func (function): The function to run on each file.
+        
+        Returns:
+            function: A function which takes the same arguments as the supplied function and runs it on each file.
+        """
+        def wrapper(*args, **kwargs):
+            for file in yield_articles(limit, exclude_subfolders):
+                print('hello')
+                print(file)
+                func(file, *args, **kwargs)
+            print("Finished processing articles!")
+        return wrapper
+    return decorator

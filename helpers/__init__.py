@@ -3,7 +3,7 @@
 # from .[FILE] import [CALLABLE]
 
 from .obsidian_note import ObsidianNote
-from .yield_functions import yield_files, yield_articles
+from .yield_functions import yield_files, yield_articles, process_articles
 from .general_functions import *
 
 __all__ = []  # list as strings

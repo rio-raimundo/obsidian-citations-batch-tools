@@ -1,6 +1,6 @@
 # %%
 """ A list of some example functions which can be used with the yield_articles decorator to mass modify Obsidian article notes. """
-from .helpers import ObsidianNote, get_value_from_bibtex_entry
+from helpers import ObsidianNote, get_value_from_bibtex_entry
 import constants as c
 
 

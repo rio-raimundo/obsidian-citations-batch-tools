@@ -36,7 +36,7 @@ class ObsidianNote():
 
         # Access file and store full contents as a list of strings
         self.filepath: str = filepath
-        file_contents: list[str] = self._file_contents_from_filepath(filepath)
+        file_contents: list[str] = self._contents_list_from_filepath(filepath)
 
         # Split contents into properties and body text
         # Note that assigning to self.flat_properties will also update self.properties_dict
@@ -126,16 +126,16 @@ class ObsidianNote():
     @property
     def flat_properties(self) -> list[str]: return self._flat_properties
     @flat_properties.setter
-    def flat_properties(self, value: list[str]):
-        self._flat_properties = value
-        self._properties_dict = self._properties_dict_from_flat()
+    def flat_properties(self, v: list[str]):
+        self._flat_properties = v
+        self._properties_dict = self._properties_dict_from_flat(v)
 
     @property
     def properties_dict(self) -> dict[str, str | list[str]]: return self._properties_dict
     @properties_dict.setter
-    def properties_dict(self, value: dict[str, str | list[str]]):
-        self._properties_dict = value
-        self._flat_properties = self._flat_properties_from_dict()
+    def properties_dict(self, v: dict[str, str | list[str]]):
+        self._properties_dict = v
+        self._flat_properties = self._flat_properties_from_dict(v)
 
     # Define internal methods, mostly related to the processing of the file properties
     def _contents_list_from_filepath(self, filepath: str) -> list:
