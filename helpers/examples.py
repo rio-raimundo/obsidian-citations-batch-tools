@@ -3,7 +3,6 @@
 from helpers import ObsidianNote, get_value_from_bibtex_entry
 import constants as c
 
-
 # %%
 """ Add the 'journal' property and corresponding value to each article in the vault which does not currently have it. """
 
