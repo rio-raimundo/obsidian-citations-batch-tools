@@ -1,11 +1,12 @@
-""" File for the ObsidianFile class. """
+""" File for the ObsidianNote class. """
 
-class ObsidianArticle():
+class ObsidianNote():
     """ Class to store data about a single obsidian file. """
 
     def __init__(self, filepath: str):
+        # Access file and store full contents as a list of strings
         self.filepath: str = filepath
-        self.contents: list[str] = self.contents_list_from_filepath()
+        self.contents: list[str] = self.contents_list_from_filepath(filepath)
 
         # Properties
         self.property_idxs, self.flat_properties = self.create_flat_properties()
@@ -18,9 +19,9 @@ class ObsidianArticle():
     def __setitem__(self, index, value):
         self.contents[index] = value
 
-    def contents_list_from_filepath(self) -> list:
+    def contents_list_from_filepath(self, filepath: str = None) -> list:
         """ Returns the contents of a file as a list."""
-        with open(self.filepath, 'r', encoding='utf-8') as file:
+        with open(filepath, 'r', encoding='utf-8') as file:
             # Remove trailing newline
             return [line.rstrip('\n') for line in file.readlines()]
         

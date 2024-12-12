@@ -2,7 +2,7 @@
 """ General use functions to make edits to article files in the vault. """
 from concurrent import futures
 
-from helpers import ObsidianArticle, doi_from_citation_key
+from helpers import ObsidianNote, doi_from_citation_key
 from . import yield_articles
 
 def toggle_abstract_collapsing(
@@ -22,7 +22,7 @@ def toggle_abstract_collapsing(
         None
     """
     for article in yield_articles(limit=limit):
-        article: ObsidianArticle
+        article: ObsidianNote
         if article.property_contains_value('tags', 'stub'): continue  # keep stubs unfolded
 
         # Toggle abstract headers
@@ -55,7 +55,7 @@ def add_author_names_as_tags(
         None
     """
     for article in yield_articles(limit=limit):
-        article: ObsidianArticle
+        article: ObsidianNote
 
         # Extract authors
         authors: list[str] = article.properties.get('authors', None)
@@ -97,7 +97,7 @@ def reorder_properties(
         None
     """
     for article in yield_articles(limit=limit):
-        article: ObsidianArticle
+        article: ObsidianNote
 
         listed_properties = {k: article.properties[k] for k in properties_order if k in article.properties}
         unlisted_properties = {k: v for k, v in article.properties.items() if k not in properties_order}
@@ -119,7 +119,7 @@ def split_links_property(
         None
     """
     for paper in yield_articles(limit=limit):
-        paper: ObsidianArticle
+        paper: ObsidianNote
 
         def find_first_starting_with(items: list[str], string: str) -> str:
             """ Find the first item in a list that starts with a given string. If none, returns empty string.
@@ -169,13 +169,13 @@ def add_missing_dois(
     for paper in yield_articles():
         if len(papers) == limit: 
             break
-        paper: ObsidianArticle
+        paper: ObsidianNote
         if paper.properties.get('doi', False) is False: 
             return
         if paper.properties['doi'] is None: 
             papers.append(paper)
 
-    def get_doi(paper: ObsidianArticle) -> None:
+    def get_doi(paper: ObsidianNote) -> None:
         """Retrieve and update DOI for a paper.
 
         Args:
