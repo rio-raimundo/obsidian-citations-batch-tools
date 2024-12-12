@@ -1,4 +1,4 @@
-A set of text tools written in Python for editing Obisidan note pages. Interfaces with the Citations Zotero plugin. Allows for renaming of files, reorganising properties (including tags), and more customisation options. Intended mainly for personal use, so documentation and code generalisability will vary.
+A set of text tools written in Python for editing Obisidan pages meant to represent academic articles (i.e. taken from the Zotero Citations plugin). Allows for renaming of files, reorganising properties (including tags), and more customisation options. Can also allow interfacing with BibTex (`.bib`) files to extract and attach information to files from an existing bibliography. Initially intended purely for personal use, so documentation and code generalisability may vary.
 
 > NOTE: Mass modification of Obsidian files can easily lead to data loss. It is highly recommended that you implement some kind of version control to your vault before using the tools provided here (personally, I highly recommend using [GitHub](https://github.com/Vinzent03/obsidian-git) to back up your vault!)
 
