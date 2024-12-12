@@ -88,6 +88,25 @@ class ObsidianNote():
         if property not in self.properties_dict: return False
         if value not in self.properties_dict[property]: return False
         return True
+    
+    def reorder_properties_from_list(self, ordered_property_labels: list[str]) -> None:
+        """
+        Reorders the properties of an Obsidian article in a specified order.
+
+        Args:
+            ordered_property_labels (list[str]): An ordered list of property labels.
+                - All property labels not in this list will be moved to the end of the properties list, though remain in their order relative to one another.
+                - Ordered property labels can contain properties not currently in the file, which will be ignored.
+
+        Returns:
+            None
+        """
+        # Generate dictionaries of ordered properties (listed in ordered_property_labels) and unlisted properties (in their original order)
+        ordered_properties = {label: self.properties_dict[label] for label in ordered_property_labels if label in self.properties_dict.keys()}
+        unlisted_properties = {label: values for label, values in self.properties_dict.items() if label not in ordered_property_labels}
+
+        # Assign to properties_dict
+        self.properties_dict = ordered_properties | unlisted_properties  # self.flat_properties will also be updated
 
     def write_file(self, copy: bool = False):
         """ Write class contents to file. If copy is True, append '_copy' to the filename. """
