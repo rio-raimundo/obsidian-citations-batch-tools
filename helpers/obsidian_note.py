@@ -15,94 +15,94 @@ class ObsidianNote():
     """
 
     def __init__(self, filepath: str):
+        """
+        Initialize an ObsidianNote object with the contents of a file.
+
+        Args:
+            filepath (str): The path to the file to be loaded.
+
+        Attributes:
+            filepath (str): Path to the file associated with this object.
+            flat_properties (list[str]): List to store flat properties of the file.
+            properties_dict (dict[str, str | list[str]]): Dictionary to store properties in key-value form.
+            body_text (list[str]): List of strings representing the body text of the file.
+
+        The method reads the file from the given filepath, splits its contents into
+        properties and body text, and initializes the corresponding attributes.
+        """
+
         self._flat_properties: list[str] = []
         self._properties_dict: dict[str, str | list[str]] = {}
 
         # Access file and store full contents as a list of strings
         self.filepath: str = filepath
-        file_contents: list[str] = self.contents_list_from_filepath(filepath)
+        file_contents: list[str] = self._file_contents_from_filepath(filepath)
 
         # Split contents into properties and body text
         # Note that assigning to self.flat_properties will also update self.properties_dict
         self.flat_properties, self.body_text = self._split_file_contents(file_contents)
-    
-    def insert_property(self, prop: str, value, location: int = -1):
-        """ Insert a new property into the file. Defaults to the end of the properties. Updates self.properties object. """
-        # Check if property already exists inside dictionary
-        if prop in self.properties_dict:
-            print(f"Warning: '{self.filepath}' already has a property named '{prop}'.")
+
+
+    """ USER FUNCTIONS. """    
+    def insert_property_at_location(self, property: str, value, location: int = -1):
+        """
+        Insert a new property into the file. Defaults to the end of the properties. Updates self.properties object.
+
+        Args:
+            property (str): Name of the new property.
+            value (str | list[str]): Value of the new property. Can be a string or a list of strings.
+            location (int, optional): Location in the properties list to insert the new property. Defaults to -1, which is the last element of the list.
+
+        Raises:
+            logging.warning: If the property already exists inside dictionary.
+        """
+        # Check if property already exists inside dictionary, warn and return if so.
+        if property in self.properties_dict:
+            logging.warning(f"Warning: '{self.filepath}' already has a property named '{property}'.")
             return
 
         # Convert the dictionary to a list, insert the new property, and convert back to a dictionary
-        proplist = list(self.properties_dict.items())
-        # Note, when using list.insert, -1 is the last element of the list
-        proplist.insert(location, (prop, value))
-        self.properties_dict = dict(proplist)
-    
-    def make_properties_lowercase(self):
-        if not self.property_idxs: return
+        temp_properties_list = list(self.properties_dict.items())
+        temp_properties_list.insert(location, (property, value)) # note when using list.insert, -1 is the last element of the list
+        self.properties_dict = dict(temp_properties_list)  # will also update flat properties
 
-        for idx, line in enumerate(self.flat_properties):
-            line: str
+    def property_contains_value(self, property: str, value: str) -> bool:
+        """
+        Identify if a given value is associated with a given property.
 
-            if line.endswith(':') or ': ' in line:
-                key, _ = line.split(':', 1)
+        Args:
+            property (str): The name of the property to check.
+            value (str): The value to check for.
 
-                # Make all property names in modified files lowercase.
-                self.flat_properties[idx] = line.replace(key, key.lower())
+        Returns:
+            bool: True if the value is associated with the property, False otherwise.
 
-    def property_contains_value(self, prop: str, value: str) -> bool:
-        """ Identify if a given value is associated with a given value. """
+        Notes:
+            - The search is case-insensitive.
+            - Returns false if the property does not exist or if the value does not exist for the property.
+        """
         if not self.properties_dict: return False
-        if self.properties_dict.get(prop) is None: return False
+        if self.properties_dict.get(property) is None: return False
 
-        prop, value = prop.lower(), value.lower()
-        if prop not in self.properties_dict: return False
-        if value not in self.properties_dict[prop]: return False
+        property, value = property.lower(), value.lower()
+        if property not in self.properties_dict: return False
+        if value not in self.properties_dict[property]: return False
         return True
-    
-    def return_property_values(self, prop: str) -> list:
-        """ Returns the values for a given tag. """
-        return self.properties_dict[prop.lower()]
-    
-    def replace_property_value(self, old_value: str, new_value: str):
-        # Update flat properties
-        for idx, line in enumerate(self.flat_properties):
-            if old_value in line:
-                line: str
-                self.flat_properties[idx] = line.replace(old_value, new_value)
-                break
-
-        # Recalculate properties dictionary and update contents
-        self.properties_dict = self._properties_dict_from_flat()
-        self.update_properties_in_contents()  # Update contents after recalculating properties
-    
-    def update_properties_in_contents(self):
-        """ Function to update the properties in the contents using flat properties. """
-        self.contents[self.property_idxs[0]+1: self.property_idxs[1]] = self.flat_properties
-    
-    def __iter__(self):
-        return iter(self.contents)
-    def __getitem__(self, index):
-        return self.contents[index]
-    def __setitem__(self, index, value):
-        self.contents[index] = value
-
-    def contents_list_from_filepath(self, filepath: str = None) -> list:
-        """ Returns the contents of a file as a list."""
-        with open(filepath, 'r', encoding='utf-8') as file:
-            # Remove trailing newline
-            return [line.rstrip('\n') for line in file.readlines()]
 
     def write_file(self, copy: bool = False):
         """ Write class contents to file. If copy is True, append '_copy' to the filename. """
-        self.update_properties_in_contents()  # update contents before writing
         filepath = self.filepath.replace('.md', '_copy.md') if copy else self.filepath
         with open(filepath, 'w', encoding='utf-8') as file:
-            file.writelines('\n'.join(self.contents) + '\n')
+            file.writelines(self.file_contents_string)
 
 
     """ INTERNAL FUNCTIONS AND PROPERTIES. """
+    # Define file_contents getter which will return the properties and body text as a single list
+    @property
+    def file_contents_list(self) -> list[str]: return ['---'] + self.flat_properties + ['---'] + self.body_text
+    @property
+    def file_contents_string(self) -> str: return ('\n'.join(self.file_contents_list) + '\n')
+
     # Define setters and getters for flat_properties and properties_dict which will update each other when set
     @property
     def flat_properties(self) -> list[str]: return self._flat_properties
@@ -118,8 +118,34 @@ class ObsidianNote():
         self._properties_dict = value
         self._flat_properties = self._flat_properties_from_dict()
 
-    def _split_file_contents(self, file_contents: list[str]) -> list:
-        """ Splits the contents of the file into a list of 'flat' properties and a list of body text. """
+    # Define internal methods, mostly related to the processing of the file properties
+    def _contents_list_from_filepath(self, filepath: str) -> list:
+        """
+        Read and return the contents of a file as a list of strings.
+
+        Args:
+            filepath (str, optional): The path to the file to be read.
+
+        Returns:
+            list: A list of strings representing the lines of the file, with trailing newline characters removed.
+
+        Raises:
+            FileNotFoundError: If the file specified by filepath does not exist.
+        """
+        with open(filepath, 'r', encoding='utf-8') as file:
+            return [line.rstrip('\n') for line in file.readlines()]
+
+    def _split_file_contents(self, file_contents: list[str]) -> tuple[list, list]:
+        """
+        Splits the contents of the file into a list of 'flat' properties and a list of body text.
+
+        Args:
+            file_contents (list[str]): The contents of the file as a list of strings.
+
+        Returns:
+            tuple[list, list]: A tuple containing two lists. The first list contains the 'flat' properties
+                and the second list contains the body text.
+        """
         default = ([], [])  # default return value
         if not file_contents or not file_contents[0].startswith("---"): return default
 

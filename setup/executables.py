@@ -137,7 +137,7 @@ def split_links_property(
 
         # Skip 'new' format papers which do not have links property
         try:
-            links = paper.return_property_values('links')
+            links = paper.properties_dict.get('links')
         except KeyError:
             continue
 

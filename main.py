@@ -64,7 +64,7 @@ for article in yield_articles():
     if article.properties_dict.get('journal') is None:
         citation_key = article.properties_dict['citation key']
         journal = get_journal_from_citation_key(citation_key)
-        article.insert_property('journal', journal, 2)
+        article.insert_property_at_location('journal', journal, 2)
     
     article._flat_properties_from_dict()
     article.write_file()
@@ -77,7 +77,7 @@ for article in yield_articles(limit=-1):
 
     if article.properties_dict.get('journal') is not None:
         journal = article.properties_dict.pop('journal')
-        article.insert_property('journal', journal, 1)
+        article.insert_property_at_location('journal', journal, 1)
     
     article._flat_properties_from_dict()
     article.write_file()
