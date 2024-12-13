@@ -241,7 +241,7 @@ class ObsidianNote():
         """
         if (self.properties.get('citation key') is None) or \
            (self.properties['citation key'] not in c.bibdata_entries):
-            return None
+            return {}
         
         entry: Entry = c.bibdata_entries[self.properties['citation key']]
         return entry.fields
