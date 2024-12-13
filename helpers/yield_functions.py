@@ -79,8 +79,9 @@ def process_articles(
         """
         def wrapper(*args, **kwargs):
             for obsidian_article in yield_articles(limit, exclude_subfolders):
-                func(obsidian_article, *args, **kwargs)
+                result = func(obsidian_article, *args, **kwargs)
                 if write: obsidian_article.write_file()
             print("Finished processing articles!")
+            return result
         return wrapper
     return decorator
