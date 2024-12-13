@@ -53,13 +53,17 @@ def yield_articles(limit: int = -1, exclude_subfolders: bool = False):
         idx += 1
         yield obsidian_note
 
-def process_articles(limit: int = -1, exclude_subfolders: bool = False, make_copies: bool = False):
+def process_articles(
+        limit: int = -1,
+        exclude_subfolders: bool = False,
+        write: bool = True,
+        ):
     """ Decorator factory to run a function across all Obsidian article files in a vault.
     
     Args:
         limit (int): The number of files to process. If negative, will process all files.
         exclude_subfolders (bool): Whether to exclude subfolders of the main folder.
-        make_copies (bool): Whether to write the updated file to a new file. If True, new file will be written with the same name as the original file with '_copy' appended.
+        write (bool): Whether to automatically write the new file after processing. If false, obsidian_file.write_file() must be called manually within the function.
     
     Returns:
         function: A function which takes the same arguments as the supplied function and runs it on each file.
@@ -76,7 +80,7 @@ def process_articles(limit: int = -1, exclude_subfolders: bool = False, make_cop
         def wrapper(*args, **kwargs):
             for obsidian_article in yield_articles(limit, exclude_subfolders):
                 func(obsidian_article, *args, **kwargs)
-                obsidian_article.write_file(make_copies)
+                if write: obsidian_article.write_file()
             print("Finished processing articles!")
         return wrapper
     return decorator
