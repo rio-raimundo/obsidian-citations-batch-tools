@@ -9,7 +9,7 @@ class ObsidianNote():
     
     Properties:
         - The class is largely used to store data about the 'properties' section of an Obsidian file, a YAML-like section at the top of the file separated by triple dashes ('---').
-        - Properties are stored both in 'flat' form (as a list of strings), which can be written directly to a the Obsidian document, and in 'dictionary' form, which can be accessed and modified more easily. Getters and setters are used to make sure that both representations are consistent with one another, allowing either to be changed and updated.
+        - Properties are stored
     
     Body text:
         - The body text of the file (everything following the properties) is stored as a list of strings, and can be accessed and modified directly.
@@ -24,25 +24,21 @@ class ObsidianNote():
 
         Attributes:
             filepath (str): Path to the file associated with this object.
-            flat_properties (list[str]): List to store flat properties of the file.
             properties_dict (dict[str, str | list[str]]): Dictionary to store properties in key-value form.
             body_text (list[str]): List of strings representing the body text of the file.
+            file_contents_list (list[str]): List of strings representing the contents of the file. Class property (read-only).
+            file_contents_string (str): String representing the contents of the file. Used to write to the file. Class property (read-only).
 
         The method reads the file from the given filepath, splits its contents into
         properties and body text, and initializes the corresponding attributes.
         """
-
-        self._flat_properties: list[str] = []
-        self._properties_dict: dict[str, str | list[str]] = {}
-
         # Access file and store full contents as a list of strings
         self.filepath: str = filepath
         file_contents: list[str] = self._contents_list_from_filepath(filepath)
 
         # Split contents into properties and body text
         # Note that assigning to self.flat_properties will also update self.properties_dict
-        self.flat_properties, self.body_text = self._split_file_contents(file_contents)
-
+        self.properties, self.body_text = self._split_file_contents(file_contents)
 
     """ USER FUNCTIONS. """    
     def insert_property_at_location(self, property: str, value, location: int = -1):
@@ -58,14 +54,14 @@ class ObsidianNote():
             logging.warning: If the property already exists inside dictionary.
         """
         # Check if property already exists inside dictionary, warn and return if so.
-        if property in self.properties_dict:
+        if property in self.properties:
             logging.warning(f"Warning: '{self.filepath}' already has a property named '{property}'.")
             return
 
         # Convert the dictionary to a list, insert the new property, and convert back to a dictionary
-        temp_properties_list = list(self.properties_dict.items())
+        temp_properties_list = list(self.properties.items())
         temp_properties_list.insert(location, (property, value)) # note when using list.insert, -1 is the last element of the list
-        self.properties_dict = dict(temp_properties_list)  # will also update flat properties
+        self.properties = dict(temp_properties_list)  # will also update flat properties
 
     def property_contains_value(self, property: str, value: str) -> bool:
         """
@@ -82,12 +78,12 @@ class ObsidianNote():
             - The search is case-insensitive.
             - Returns false if the property does not exist or if the value does not exist for the property.
         """
-        if not self.properties_dict: return False
-        if self.properties_dict.get(property) is None: return False
+        if not self.properties: return False
+        if self.properties.get(property) is None: return False
 
         property, value = property.lower(), value.lower()
-        if property not in self.properties_dict: return False
-        if value not in self.properties_dict[property]: return False
+        if property not in self.properties: return False
+        if value not in self.properties[property]: return False
         return True
     
     def reorder_properties_from_list(self, ordered_property_labels: list[str]) -> None:
@@ -103,11 +99,11 @@ class ObsidianNote():
             None
         """
         # Generate dictionaries of ordered properties (listed in ordered_property_labels) and unlisted properties (in their original order)
-        ordered_properties = {label: self.properties_dict[label] for label in ordered_property_labels if label in self.properties_dict.keys()}
-        unlisted_properties = {label: values for label, values in self.properties_dict.items() if label not in ordered_property_labels}
+        ordered_properties = {label: self.properties[label] for label in ordered_property_labels if label in self.properties.keys()}
+        unlisted_properties = {label: values for label, values in self.properties.items() if label not in ordered_property_labels}
 
         # Assign to properties_dict
-        self.properties_dict = ordered_properties | unlisted_properties  # self.flat_properties will also be updated
+        self.properties = ordered_properties | unlisted_properties  # self.flat_properties will also be updated
 
     def replace_file(self, filepath: str):
         """Deletes the original file associated with this object, and writes to a new filepath. Can be used simply to rename the file, or to move it to a new location. Also updates the self.filepath attribute.
@@ -134,6 +130,7 @@ class ObsidianNote():
         Returns:
             None
         """
+        # Assign correct filepath given arguments
         if filepath is None: filepath = self.filepath
         if copy: filepath = filepath.replace('.md', '_copy.md')
 
@@ -143,24 +140,13 @@ class ObsidianNote():
     """ INTERNAL FUNCTIONS AND PROPERTIES. """
     # Define file_contents getter which will return the properties and body text as a single list
     @property
-    def file_contents_list(self) -> list[str]: return ['---'] + self.flat_properties + ['---'] + self.body_text
+    def file_contents_list(self) -> list[str]: return ['---'] + self._flat_properties_from_dict(self.properties) + ['---'] + self.body_text
     @property
     def file_contents_string(self) -> str: return ('\n'.join(self.file_contents_list) + '\n')
-
-    # Define setters and getters for flat_properties and properties_dict which will update each other when set
     @property
-    def flat_properties(self) -> list[str]: return self._flat_properties
-    @flat_properties.setter
-    def flat_properties(self, v: list[str]):
-        self._flat_properties = v
-        self._properties_dict = self._properties_dict_from_flat(v)
+    def filename(self) -> str: return os.path.basename(self.filepath)
 
-    @property
-    def properties_dict(self) -> dict[str, str | list[str]]: return self._properties_dict
-    @properties_dict.setter
-    def properties_dict(self, v: dict[str, str | list[str]]):
-        self._properties_dict = v
-        self._flat_properties = self._flat_properties_from_dict(v)
+    def __repr__(self): return f"ObsidianNote(filename='{self.filename}')"
 
     # Define internal methods, mostly related to the processing of the file properties
     def _contents_list_from_filepath(self, filepath: str) -> list:
@@ -179,9 +165,9 @@ class ObsidianNote():
         with open(filepath, 'r', encoding='utf-8') as file:
             return [line.rstrip('\n') for line in file.readlines()]
 
-    def _split_file_contents(self, file_contents: list[str]) -> tuple[list, list]:
+    def _split_file_contents(self, file_contents: list[str]) -> tuple[dict, list]:
         """
-        Splits the contents of the file into a list of 'flat' properties and a list of body text.
+        Splits the contents of the file into a dictionary of properties and a list of body text.
 
         Args:
             file_contents (list[str]): The contents of the file as a list of strings.
@@ -201,7 +187,7 @@ class ObsidianNote():
             return default  # return default if properties are not found (no closing '---' line)
         
         # If properties found, return the properties and body text (excluding '---' lines)
-        return file_contents[1: line_idx], file_contents[line_idx+1:]
+        return self._properties_dict_from_flat(file_contents[1: line_idx]), file_contents[line_idx+1:]
     
     def _properties_dict_from_flat(self, flat_properties: list[str]) -> dict[str, str | list[str]]:
         # Initialise properties dictionary
