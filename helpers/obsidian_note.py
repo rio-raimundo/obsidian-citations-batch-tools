@@ -109,9 +109,18 @@ class ObsidianNote():
         # Assign to properties_dict
         self.properties_dict = ordered_properties | unlisted_properties  # self.flat_properties will also be updated
 
-    def delete_original(self):
-        """Deletes the original file associated with this object."""
-        os.remove(self.filepath)
+    def replace_file(self, filepath: str):
+        """Deletes the original file associated with this object, and writes to a new filepath. Can be used simply to rename the file, or to move it to a new location. Also updates the self.filepath attribute.
+
+        Args:
+            filepath (str): The new filepath for the file.
+
+        Returns:
+            None
+        """
+        os.remove(self.filepath)  # delete the original file
+        self.write_file(filepath)  # write to the new filepath
+        self.filepath = filepath  # update the filepath attribute
 
     def write_file(self, filepath: str = None, copy: bool = False):
         """Writes class contents to file.
