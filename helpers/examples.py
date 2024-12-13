@@ -7,15 +7,15 @@ import constants as c
 """ Add the 'journal' property and corresponding value to each article in the vault which does not currently have it. """
 
 def add_journal_property_to_article(article: ObsidianNote):
-    if article.properties_dict.get('journal') is None:
-        citation_key = article.properties_dict['citation key']
+    if article.properties.get('journal') is None:
+        citation_key = article.properties['citation key']
         journal = get_value_from_bibtex_entry(citation_key, c.bibdata_entries, 'journal')
         article.insert_property_at_location('journal', journal, 2)
 
-    elif article.properties_dict['journal'] == '':
-        citation_key = article.properties_dict['citation key']
+    elif article.properties['journal'] == '':
+        citation_key = article.properties['citation key']
         journal = get_value_from_bibtex_entry(citation_key, c.bibdata_entries, 'journal')
-        article.properties_dict['journal'] = journal
+        article.properties['journal'] = journal
 
 
 # %% 
@@ -23,7 +23,7 @@ def add_journal_property_to_article(article: ObsidianNote):
 
 def move_tags_to_start(article: ObsidianNote, tags_to_move: list):
     """ Note that accessing the tags property directly will not modify flat properties, so you have to get a reference ot the properties themselves and update them at the end. """
-    properties: dict = article.properties_dict
+    properties: dict = article.properties
     current_tags: list = properties['tags']
     
     # Rename paper tag to article
@@ -35,4 +35,4 @@ def move_tags_to_start(article: ObsidianNote, tags_to_move: list):
                     current_tags.pop(idx)
                     current_tags.insert(0, tag_to_move)
 
-    article.properties_dict = properties
+    article.properties = properties
