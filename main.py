@@ -8,7 +8,7 @@ from helpers import ObsidianNote, process_articles
 """ EXAMPLE USAGE OF THE CODE. """
 # First call the decorator to process the articles, with arguments as needed (defaults used here)
 # Then define your custom function and what it should do with each ObsidianNote (article) object
-@process_articles(limit=-1, exclude_subfolders=False, make_copies=False)
+@process_articles(limit=-1, exclude_subfolders=False, write=True)
 def add_custom_property(obsidian_note: ObsidianNote):
     """ Example function that adds the custom property 'modified' to the end of each note. """
     obsidian_note.insert_property_at_location('modified', 'Yes', location=-1)
