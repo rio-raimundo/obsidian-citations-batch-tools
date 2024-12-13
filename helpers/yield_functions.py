@@ -18,8 +18,8 @@ def yield_files(folder_path: str, extension: str, exclude_subfolders: bool = Fal
             file_path = os.path.join(root, file_name)
             yield file_path
 
-def yield_articles(limit: int = -1, exclude_subfolders: bool = False):
-    """ Yields each article in a vault as ObsidianFile object. """
+def yield_notes(limit: int = -1, exclude_subfolders: bool = False):
+    """ Yields each note in a vault as ObsidianNote object. """
     # Check if folder exists
     if not os.path.exists(c.vault_path):
         raise FileNotFoundError(f"Folder {c.vault_path} does not exist.")
@@ -38,19 +38,22 @@ def yield_articles(limit: int = -1, exclude_subfolders: bool = False):
 
         # Limit number of files
         if limit > 0 and idx >= limit: break
+        idx += 1
 
         obsidian_note: ObsidianNote = ObsidianNote(filepath)
+        yield obsidian_note
 
-        check1 = obsidian_note.property_contains_value('tags', 'document/article')
-        if check1 == True:
-            pass
-        check2 = any([obsidian_note.property_contains_value('tags', tag) for tag in c.article_tags])
-        if check2 == True: 
-            pass
-        pass
+def yield_articles(limit: int = -1, exclude_subfolders: bool = False):
+    """ Yields only articles in a vault as ObsidianNote objects. """
 
+    idx = 0
+    for obsidian_note in yield_notes(-1, exclude_subfolders):
         if not any([obsidian_note.property_contains_value('tags', tag) for tag in c.article_tags]): continue
+
+        # Limit number of files
+        if limit > 0 and idx >= limit: break
         idx += 1
+
         yield obsidian_note
 
 def process_articles(
