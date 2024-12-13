@@ -150,6 +150,8 @@ class ObsidianNote():
     @property
     def file_contents_string(self) -> str: return ('\n'.join(self.file_contents_list) + '\n')
     @property
+    def folderpath(self) -> str: return os.path.dirname(self.filepath)
+    @property
     def filename(self) -> str: return os.path.basename(self.filepath)
 
     def __repr__(self): return f"ObsidianNote(filename='{self.filename}')"
