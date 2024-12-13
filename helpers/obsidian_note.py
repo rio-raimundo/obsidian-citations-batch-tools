@@ -242,7 +242,7 @@ class ObsidianNote():
            (self.properties['citation key'] not in c.bibdata_entries):
             return None
         
-        return c.bibdata_entries[self.properties['citation key']]
+        return c.bibdata_entries[self.properties[c.citation_key_property_name]]
 
     def _flat_properties_from_dict(self, properties_dict: dict[str, str | list[str]]) -> list[str]:
         """Converts a properties dictionary to a list of 'flat' properties.
