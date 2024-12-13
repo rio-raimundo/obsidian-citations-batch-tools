@@ -1,4 +1,5 @@
 """ File for the ObsidianNote class. """
+import os
 import logging
 
 class ObsidianNote():
@@ -108,12 +109,27 @@ class ObsidianNote():
         # Assign to properties_dict
         self.properties_dict = ordered_properties | unlisted_properties  # self.flat_properties will also be updated
 
-    def write_file(self, copy: bool = False):
-        """ Write class contents to file. If copy is True, append '_copy' to the filename. """
-        filepath = self.filepath.replace('.md', '_copy.md') if copy else self.filepath
+    def delete_original(self):
+        """Deletes the original file associated with this object."""
+        os.remove(self.filepath)
+
+    def write_file(self, filepath: str = None, copy: bool = False):
+        """Writes class contents to file.
+
+        If copy is True, appends '_copy' to the filename.
+
+        Args:
+            filepath: str, optional. If None, will use self.filepath.
+            copy: bool, optional. If True, will append '_copy' to the filename.
+
+        Returns:
+            None
+        """
+        if filepath is None: filepath = self.filepath
+        if copy: filepath = filepath.replace('.md', '_copy.md')
+
         with open(filepath, 'w', encoding='utf-8') as file:
             file.writelines(self.file_contents_string)
-
 
     """ INTERNAL FUNCTIONS AND PROPERTIES. """
     # Define file_contents getter which will return the properties and body text as a single list
