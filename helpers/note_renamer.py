@@ -23,8 +23,8 @@ class NoteRenamer:
 
         # Then add the renaming to the dictionary
         self.notes_to_rename[old_name] = new_name
-    
-    def replace_links(self, link: str):
+
+    def replace_link(self, link: str):
         """ Checks if a given link is in the dictionary and replaces it with the new name. """
         if link in self.notes_to_rename:
             return self.notes_to_rename[link]
@@ -37,5 +37,13 @@ class NoteRenamer:
             obsidian_note: ObsidianNote
 
             # Find all links in page
-            for line in obsidian_note.body_text:
-                re.sub(r"\[\[.*?\]\]", self.replace_links, line)
+            pattern = re.compile(r"\[\[.*?\]\]")
+            for idx in range(len(obsidian_note.body_text)):
+                matches = re.findall(pattern, obsidian_note.body_text[idx])
+                
+                for match in matches:
+                    match: str = match[2:-2]
+                    obsidian_note.body_text[idx] = obsidian_note.body_text[idx].replace(match, self.replace_link(match))
+            
+            # Write the file
+            obsidian_note.write_file()

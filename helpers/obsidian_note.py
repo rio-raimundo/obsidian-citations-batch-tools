@@ -41,7 +41,7 @@ class ObsidianNote():
 
         # Split contents into properties and body text
         # Note that assigning to self.flat_properties will also update self.properties_dict
-        self.properties, self.body_text = self._split_file_contents(file_contents)
+        self.properties, self.body_text, self.has_properties = self._split_file_contents(file_contents)
 
         # Get a reference to the relevant BibTex data for this file
         self.bibtex_data = self._get_bibtex_data()
@@ -146,9 +146,11 @@ class ObsidianNote():
     """ INTERNAL FUNCTIONS AND PROPERTIES. """
     # Define file_contents getter which will return the properties and body text as a single list
     @property
-    def file_contents_list(self) -> list[str]: return ['---'] + self._flat_properties_from_dict(self.properties) + ['---'] + self.body_text
+    def file_contents_list(self) -> list[str]:
+        if not self.has_properties: return self.body_text
+        return ['---'] + self._flat_properties_from_dict(self.properties) + ['---'] + self.body_text
     @property
-    def file_contents_string(self) -> str: return ('\n'.join(self.file_contents_list) + '\n')
+    def file_contents_string(self) -> str: return ('\n'.join(self.file_contents_list))
     @property
     def folderpath(self) -> str: return os.path.dirname(self.filepath)
     @property
@@ -171,7 +173,10 @@ class ObsidianNote():
             FileNotFoundError: If the file specified by filepath does not exist.
         """
         with open(filepath, 'r', encoding='utf-8') as file:
-            return [line.rstrip('\n') for line in file.readlines()]
+            lines = file.readlines()
+            if lines and lines[-1].endswith('\n'):
+                lines.append('')
+            return [line.rstrip('\n') for line in lines]
 
     def _split_file_contents(self, file_contents: list[str]) -> tuple[dict, list]:
         """
@@ -184,7 +189,7 @@ class ObsidianNote():
             tuple[list, list]: A tuple containing two lists. The first list contains the 'flat' properties
                 and the second list contains the body text.
         """
-        default = ({}, [])  # default return value
+        default = ({}, file_contents, False)  # default return value
         if not file_contents or not file_contents[0].startswith("---"): return default
 
         # Find indexes for first two instances of '---' line to identify properties
@@ -195,7 +200,7 @@ class ObsidianNote():
             return default  # return default if properties are not found (no closing '---' line)
         
         # If properties found, return the properties and body text (excluding '---' lines)
-        return self._properties_dict_from_flat(file_contents[1: line_idx]), file_contents[line_idx+1:]
+        return self._properties_dict_from_flat(file_contents[1: line_idx]), file_contents[line_idx+1:], True
     
     def _properties_dict_from_flat(self, flat_properties: list[str]) -> dict[str, str | list[str]]:
         # Initialise properties dictionary
@@ -217,7 +222,7 @@ class ObsidianNote():
             # If the line contains a property label...
             if line.endswith(':') or ': ' in line:
                 propery_label, text_overflow = line.split(':', 1)
-                current_property_label = propery_label.lower()  # note that all labels are stored (and assigned) in lowercase
+                current_property_label = propery_label  # note that all labels are stored (and assigned) in lowercase
 
                 # If overflow has non-whitespace characters, assign it as the value of the current property
                 # Otherwise, assume it is an empty property and assign None
