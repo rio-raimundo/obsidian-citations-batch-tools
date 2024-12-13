@@ -10,7 +10,7 @@ import constants as c
     - First, call the decorator `process_articles` with the desired arguments. This will process the articles in the vault and make them available to the function you define.
     - Define a function that takes an `ObsidianNote` object as an argument. This function will be executed on each article in the vault.
 """
-@process_articles(limit=20, exclude_subfolders=False, write=True)
+@process_articles(limit=-1, exclude_subfolders=False, write=True)
 def update_journals(obsidian_note: ObsidianNote):
     """ EXAMPLE FUNCTION.
         - Updates the 'journal' property of an ObsidianNote object, or adds it if it does not have it.
