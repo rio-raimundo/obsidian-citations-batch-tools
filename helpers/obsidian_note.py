@@ -2,6 +2,8 @@
 import os
 import logging
 
+import constants as c
+
 class ObsidianNote():
     """
     Class to store data about a single obsidian file.
@@ -39,6 +41,9 @@ class ObsidianNote():
         # Split contents into properties and body text
         # Note that assigning to self.flat_properties will also update self.properties_dict
         self.properties, self.body_text = self._split_file_contents(file_contents)
+
+        # Get a reference to the relevant BibTex data for this file
+        self.bibtex_data = self._get_bibtex_data()
 
     """ USER FUNCTIONS. """    
     def insert_property_at_location(self, property: str, value, location: int = -1):
@@ -176,7 +181,7 @@ class ObsidianNote():
             tuple[list, list]: A tuple containing two lists. The first list contains the 'flat' properties
                 and the second list contains the body text.
         """
-        default = ([], [])  # default return value
+        default = ({}, [])  # default return value
         if not file_contents or not file_contents[0].startswith("---"): return default
 
         # Find indexes for first two instances of '---' line to identify properties
@@ -229,6 +234,15 @@ class ObsidianNote():
                 properties_dict[current_property_label].append(line.lstrip('- '))
 
         return properties_dict
+
+    def _get_bibtex_data(self) -> dict[str, str]:
+        """ Attempts to retrieve the BibTex data for the article from the global BibData object. Defaults to using the citation key as the key for the BibData dictionary.
+        """
+        if (self.properties.get('citation key') is None) or \
+           (self.properties['citation key'] not in c.bibdata_entries):
+            return None
+        
+        return c.bibdata_entries[self.properties['citation key']]
 
     def _flat_properties_from_dict(self, properties_dict: dict[str, str | list[str]]) -> list[str]:
         """Converts a properties dictionary to a list of 'flat' properties.
