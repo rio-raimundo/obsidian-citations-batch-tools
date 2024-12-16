@@ -65,7 +65,8 @@ class NoteRenamer:
                     new_full_link = regex.sub(link_name_pattern, new_link_name, full_link)
                     
                     # Replace the full link in the text with the new full link
-                    obsidian_note.body_text[idx] = obsidian_note.body_text[idx].replace(full_link, new_full_link)
+                    if new_full_link != full_link:
+                        obsidian_note.body_text[idx] = obsidian_note.body_text[idx].replace(full_link, new_full_link)
             
             # Write the file
             obsidian_note.write_file()
