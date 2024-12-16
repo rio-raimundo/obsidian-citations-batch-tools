@@ -60,7 +60,6 @@ class NoteRenamer:
 
                     # Get the 'new' link name (replaces old name with new name if it exists, otherwise just returns the old name)
                     new_link_name = self.replace_link(link_name)
-                    print(f"{obsidian_note.filename}: {link_name} -> {new_link_name}")
 
                     # Sub the new link name into the full link only at the occurrences given by the link_name_pattern
                     new_full_link = regex.sub(link_name_pattern, new_link_name, full_link)
