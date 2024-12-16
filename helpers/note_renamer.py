@@ -85,7 +85,7 @@ def rename_articles(
         """ Decorator to run a function across all Obsidian article files in a vault."""
 
         # This is the wrapper function, which is actually going to execute the logic surrounding the function
-        def wrapper(obsidian_note: ObsidianNote):
+        def wrapper():
             # First we initialise the renamer
             renamer = NoteRenamer()
 
