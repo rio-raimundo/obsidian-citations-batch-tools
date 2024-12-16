@@ -2,7 +2,7 @@
 import regex
 
 from dataclasses import dataclass
-from . import yield_notes, ObsidianNote, process_articles
+from . import yield_notes, ObsidianNote
 
 @dataclass
 class FileRef:
