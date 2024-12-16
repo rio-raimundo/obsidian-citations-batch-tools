@@ -43,40 +43,52 @@ def process_articles(
     return decorator
 
 
-
-# Decorator to rename articles in a vault
-# REMEMBER: outermost function is just so you can pass arguments to the decorator
 def rename_articles(
     limit: int = -1,
     exclude_subfolders: bool = False,
     ):
-    """ Decorator factory to rename articles in a vault. """
+    """ Decorator factory to rename articles in a vault.
 
-    # This is the actual decorator, which can only take in a function
+    Specifications:
+        - Take an ObsidianNote object as an argument, with no other arguments.
+        - Return statements MUST be in the form of a tuple (old_name, new_name), where old_name is the current name of the file and new_name is the desired new name, OR None to skip renaming the file.
+
+    Example usage:
+        @rename_articles(limit=-1, exclude_subfolders=False)
+        def change_ands_to_ampersands(obsidian_article: ObsidianNote):
+            if ' and ' in obsidian_article.filename:
+                new_name = obsidian_article.filename.replace(' and ', ' & ')
+                return (obsidian_article.filename, new_name)
+            else:
+                return None
+
+    Args:
+        limit (int): The number of files to process. If negative, will process all files.
+        exclude_subfolders (bool): Whether to exclude subfolders of the main folder.
+    
+    Returns:
+        function: A function which takes the same arguments as the supplied function and runs it on each file.
+    """
     def decorator(func):
-        """ Decorator to run a function across all Obsidian article files in a vault."""
 
-        # This is the wrapper function, which is actually going to execute the logic surrounding the function
         def wrapper():
             # First we initialise the renamer
-            renamer = NoteRenamer()
+            renamer = NoteRenamer() 
 
-            # Define a new wrapper function which simply calls the input function ONCE, and then writes its output to the renamer
-            # But remember, we DON'T write the files here, we just add them to the renamer, because it's faster to handle this logic all at once at the end
+            # 'input' wrapper defined here so that we can call the function with the process_articles decorator
             @process_articles(limit=limit, exclude_subfolders=exclude_subfolders, write=False)
             def input_func_wrapper(obsidian_article: ObsidianNote):
                 result = func(obsidian_article)
                 if result is not None:
-                    old_name, new_name = result
+                    old_name, new_name = result  # unpack the tuple
                     renamer.add(obsidian_article.filepath, old_name, new_name)
             
-            # Now we call our wrapped function, which will call our input for each file in the vault
-            # This adds to the note renamer a list of all the filepaths
+            # Call our wrapped function which will add a list of desired files to the renamer
             input_func_wrapper()
 
             # Rename all the files by calling the function once in the renamer, on the list of files to rename
             renamer.rename_files()
 
         return wrapper
-
     return decorator
+
