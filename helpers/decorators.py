@@ -12,6 +12,11 @@ def process_articles(
         write: bool = True,
         ):
     """ Decorator factory to run a function across all Obsidian article files in a vault.
+
+    The decorated function must:
+        - Take an ObsidianNote object as an argument, with no other arguments.
+
+    
     
     Args:
         limit (int): The number of files to process. If negative, will process all files.
@@ -33,10 +38,8 @@ def process_articles(
         def wrapper():
             for obsidian_article in yield_articles(limit, exclude_subfolders):
                 obsidian_article: ObsidianNote
-                result = func(obsidian_article)
                 if write: obsidian_article.write_file()
             print("Finished processing articles!")
-            return result
         return wrapper
     return decorator
 
