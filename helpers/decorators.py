@@ -8,7 +8,6 @@ from . import yield_articles, ObsidianNote, NoteRenamer
 
 def process_articles(
         limit: int = -1,
-        exclude_subfolders: bool = False,
         write: bool = True,
         ):
     """ Decorator factory to run a function across all Obsidian article files in a vault.
@@ -25,7 +24,6 @@ def process_articles(
     
     Args:
         limit (int): The number of files to process. If negative, will process all files.
-        exclude_subfolders (bool): Whether to exclude subfolders of the main folder.
         write (bool): Whether to automatically write the new file after processing. If false, obsidian_file.write_file() must be called manually within the function.
     
     Returns:
@@ -35,7 +33,7 @@ def process_articles(
         """ This is the 'decorator' function which takes in the function to be decorated, and returns the 'wrapper' function which does the same thing but with the added logic. """
         def wrapper():
             """ This is the wrapper function which will be run when we call the decorated function (after it has been decorated). It contains the decorated function, plus the additional logic. """
-            for obsidian_article in yield_articles(limit, exclude_subfolders):
+            for obsidian_article in yield_articles(limit):
                 obsidian_article: ObsidianNote
                 func(obsidian_article)
                 if write: obsidian_article.write_file()
@@ -46,7 +44,6 @@ def process_articles(
 
 def rename_articles(
     limit: int = -1,
-    exclude_subfolders: bool = False,
     ):
     """ Decorator factory to rename articles in a vault.
 
@@ -65,7 +62,6 @@ def rename_articles(
 
     Args:
         limit (int): The number of files to process. If negative, will process all files.
-        exclude_subfolders (bool): Whether to exclude subfolders of the main folder.
     
     Returns:
         function: A function which takes the same arguments as the supplied function and runs it on each file.
@@ -77,7 +73,7 @@ def rename_articles(
             renamer = NoteRenamer() 
 
             # 'input' wrapper defined here so that we can call the function with the process_articles decorator
-            @process_articles(limit=limit, exclude_subfolders=exclude_subfolders, write=False)
+            @process_articles(limit=limit, write=False)
             def input_func_wrapper(obsidian_article: ObsidianNote):
                 new_name = func(obsidian_article)
                 if new_name is not None:
