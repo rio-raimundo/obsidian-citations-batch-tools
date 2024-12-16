@@ -13,10 +13,15 @@ def process_articles(
         ):
     """ Decorator factory to run a function across all Obsidian article files in a vault.
 
-    The decorated function must:
+    Specifications:
         - Take an ObsidianNote object as an argument, with no other arguments.
+        - Return statements can be given, but will be ignored. The decorated function will return None.
 
-    
+    Example usage:
+        @process_articles(limit=-1, exclude_subfolders=False, write=True)
+        def delete_journal_property(obsidian_note: ObsidianNote):
+            if 'journal' in obsidian_note.properties:
+                del obsidian_note.properties['journal']
     
     Args:
         limit (int): The number of files to process. If negative, will process all files.
@@ -27,15 +32,9 @@ def process_articles(
         function: A function which takes the same arguments as the supplied function and runs it on each file.
     """
     def decorator(func):
-        """ Decorator to run a function across all Obsidian article files in a vault.
-        
-        Args:
-            func (function): The function to run on each file.
-        
-        Returns:
-            function: A function which takes the same arguments as the supplied function and runs it on each file.
-        """
+        """ This is the 'decorator' function which takes in the function to be decorated, and returns the 'wrapper' function which does the same thing but with the added logic. """
         def wrapper():
+            """ This is the wrapper function which will be run when we call the decorated function (after it has been decorated). It contains the decorated function, plus the additional logic. """
             for obsidian_article in yield_articles(limit, exclude_subfolders):
                 obsidian_article: ObsidianNote
                 if write: obsidian_article.write_file()
