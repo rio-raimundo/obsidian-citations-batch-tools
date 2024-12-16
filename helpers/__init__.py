@@ -3,9 +3,10 @@
 # from .[FILE] import [CALLABLE]
 
 from .obsidian_note import ObsidianNote
-from .yield_functions import yield_files, yield_notes, yield_articles, process_articles
-from .note_renamer import NoteRenamer, rename_articles
+from .yield_functions import yield_files, yield_notes, yield_articles
+from .note_renamer import NoteRenamer
 from .general_functions import *
-from .examples import *
+
+from .decorators import process_articles, rename_articles
 
 __all__ = []  # list as strings
