@@ -15,5 +15,5 @@ To use this repo:
 The repository is designed to make the mass management of Obsidian files representing articles easier. The general usecase is as follows:
 - Users can write a short custom function detailing the changes they want to make to a single `ObsidianFile`.
 - They can leverage existing functionality of the custom `ObsidianFile` class, including automatic access of the file properties in dictionary structure and other functions, such as reordering properties.
-- Custom functions can be flexibly applied to all Obsidian article notes in a vault by leveraging the `yield_articles` decorator, which runs a function across all files in an Obsidian vault with any of a specific set of tags. These tags can be set in `constants.py`.
-- Example usage is provided at the top of the `main.py` script.
+- Custom functions can be flexibly applied to all Obsidian article notes in a vault by leveraging the `process_articles` decorator, which runs a function across all files in an Obsidian vault with any of a specific set of tags. These tags can be set in `constants.py`.
+- Example usage is provided at the top of the `main.py` script, as well as in the documentation for the currently available decorators (`helpers/decorators.py`).
