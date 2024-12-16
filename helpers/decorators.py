@@ -77,9 +77,13 @@ def rename_articles(
             def input_func_wrapper(obsidian_article: ObsidianNote):
                 new_name = func(obsidian_article)
                 if new_name is not None:
+                    new_name: str
+
+                    # Strip the file extensions
+                    old_name, new_name = obsidian_article.filename.rsplit('.', 1)[0], new_name.rsplit('.', 1)[0]
+
                     # Strip the file extension from the new name
-                    new_name = new_name.split('.')[0]
-                    renamer.add(obsidian_article.filepath, obsidian_article.filename, new_name)
+                    renamer.add(obsidian_article.filepath, old_name, new_name)
             
             # Call our wrapped function which will add a list of desired files to the renamer
             input_func_wrapper()
