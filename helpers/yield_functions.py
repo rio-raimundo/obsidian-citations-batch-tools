@@ -80,9 +80,9 @@ def process_articles(
         Returns:
             function: A function which takes the same arguments as the supplied function and runs it on each file.
         """
-        def wrapper(*args, **kwargs):
+        def wrapper():
             for obsidian_article in yield_articles(limit, exclude_subfolders):
-                result = func(obsidian_article, *args, **kwargs)
+                result = func(obsidian_article)
                 if write: obsidian_article.write_file()
             print("Finished processing articles!")
             return result
