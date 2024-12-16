@@ -37,6 +37,7 @@ def process_articles(
             """ This is the wrapper function which will be run when we call the decorated function (after it has been decorated). It contains the decorated function, plus the additional logic. """
             for obsidian_article in yield_articles(limit, exclude_subfolders):
                 obsidian_article: ObsidianNote
+                func(obsidian_article)
                 if write: obsidian_article.write_file()
             print("Finished processing articles!")
         return wrapper
