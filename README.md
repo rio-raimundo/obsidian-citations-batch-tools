@@ -6,9 +6,9 @@ A set of text tools written in Python for editing Obisidan pages meant to repres
 To use this repo:
 - Clone the `main` branch (designed for general use) locally onto your machine.
 - Manually modify the values in `constants.py` to assign the correct paths.
-- To use some of the repo's functionality, a link to a `BetterBibtex` `.bib` file will need to be provided.
-    - [These steps](https://github.com/hans/obsidian-citation-plugin) intended for the Obsidian `Citations` plugin can be used to generate an automatically-updating Bibtex file, which can be placed in your vault and linked to via this repo.
-    - These steps are intended for users of Zotero. If other reference managers are used, there are likely other ways to generate the needed Bibtex file.
+- To use some of the repo's functionality, a link to a `BetterBibTex` `.bib` file will need to be provided.
+    - [These steps](https://github.com/hans/obsidian-citation-plugin) intended for the Obsidian `Citations` plugin can be used to generate an automatically-updating BibTex file, which can be placed in your vault and linked to via this repo.
+    - These steps are intended for users of Zotero. If other reference managers are used, there are likely other ways to generate the needed BibTex file.
     - Generally speaking, if you only need to rearrange existing information in your vault, you will not need to generate this file. However, it allows you to pull in new information about articles.
 
 ## Using the repository
