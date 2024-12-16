@@ -51,14 +51,14 @@ def rename_articles(
 
     Specifications:
         - Take an ObsidianNote object as an argument, with no other arguments.
-        - Return statements MUST be in the form of a tuple (old_name, new_name), where old_name is the current name of the file and new_name is the desired new name, OR None to skip renaming the file.
+        - Return statements MUST be in the form of a str "new_name", OR None to skip renaming the file.
 
     Example usage:
         @rename_articles(limit=-1, exclude_subfolders=False)
         def change_ands_to_ampersands(obsidian_article: ObsidianNote):
             if ' and ' in obsidian_article.filename:
                 new_name = obsidian_article.filename.replace(' and ', ' & ')
-                return (obsidian_article.filename, new_name)
+                return new_name
             else:
                 return None
 
@@ -78,10 +78,9 @@ def rename_articles(
             # 'input' wrapper defined here so that we can call the function with the process_articles decorator
             @process_articles(limit=limit, exclude_subfolders=exclude_subfolders, write=False)
             def input_func_wrapper(obsidian_article: ObsidianNote):
-                result = func(obsidian_article)
-                if result is not None:
-                    old_name, new_name = result  # unpack the tuple
-                    renamer.add(obsidian_article.filepath, old_name, new_name)
+                new_name = func(obsidian_article)
+                if new_name is not None:
+                    renamer.add(obsidian_article.filepath, obsidian_article.filename, new_name)
             
             # Call our wrapped function which will add a list of desired files to the renamer
             input_func_wrapper()
