@@ -36,7 +36,7 @@ class NoteRenamer:
         for obsidian_note in yield_notes(-1, exclude_subfolders=False):
             obsidian_note: ObsidianNote
 
-            """ First we can define the regex patterns which will be used:
+            r""" First we can define the regex patterns which will be used:
                 - Full link pattern is a simple pattern that matches any text in the form [[...]], including the brackets
 
                 - Link name pattern is a complex pattern attempting to match the 'true link' portion of linked text (referred to as 'l'):
