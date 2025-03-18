@@ -3,6 +3,7 @@
 #! %autoreload 3
 """ Main file from which to run the project."""
 
+from pybtex.database import Person, Entry
 from helpers import ObsidianNote, process_articles, rename_articles
 import constants as c
 
@@ -15,7 +16,7 @@ The two decorators are:
 
 Information on how to use both decorators is provided in the docstrings of the helpers/decorators.py file. Additionally, an extended example of how to use the process_articles decorator (the main decorator you will be using) is provided below. This example also includes an example of integrating with a BibTex file to pull extra information into your Obsidian notes.
 """
-@process_articles(limit=-1, exclude_subfolders=False, write=True)
+@process_articles(limit=-1, write=False)
 def update_journals(obsidian_note: ObsidianNote):
     """ EXAMPLE FUNCTION.
         - Updates the 'journal' property of an ObsidianNote object, or adds it if it does not have it.
@@ -32,7 +33,9 @@ def update_journals(obsidian_note: ObsidianNote):
     # NOTE: this call relies on obsidian_note.bibtex_data(), which reads the BibTex data using the `c.bibtex_path` constant, and assumes that the ObsidianNote has a property 'citation key' that contains the BibTex citation key. The name of this property can be specified in the constants file.
 
     # Returns the value of the 'journal' key in the BibTex data, or None if it does not exist
-    journal = obsidian_note.bibtex_data.get('journal', None)
+    bibdata: Entry = obsidian_note.bibtex_data
+    if not bibdata: return  # skip articles with non bibdata!
+    journal = bibdata.fields.get('journal', 'unspecified')  # second argumnet is the default value
 
     # Insert the property at a specified location
     obsidian_note.insert_property_at_location('journal', journal, location)
