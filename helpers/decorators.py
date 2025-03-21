@@ -4,11 +4,12 @@ Currently contains two decorators:
     - process_articles: Decorator to run a function across all Obsidian article files in a vault.
     - rename_articles: Decorator to rename articles in a vault according to a defined set of rules.
 """
-from . import yield_articles, ObsidianNote, NoteRenamer
+from . import yield_articles, yield_notes, ObsidianNote, NoteRenamer
 
 def process_articles(
         limit: int = -1,
         write: bool = True,
+        yield_all_files: bool = False,
         ):
     """ Decorator factory to run a function across all Obsidian article files in a vault.
 
@@ -33,17 +34,19 @@ def process_articles(
         """ This is the 'decorator' function which takes in the function to be decorated, and returns the 'wrapper' function which does the same thing but with the added logic. """
         def wrapper():
             """ This is the wrapper function which will be run when we call the decorated function (after it has been decorated). It contains the decorated function, plus the additional logic. """
-            for obsidian_article in yield_articles(limit):
-                obsidian_article: ObsidianNote
-                func(obsidian_article)
-                if write: obsidian_article.write_file()
+            yield_func = yield_notes if yield_all_files else yield_articles
+
+            for note in yield_func(limit):
+                note: ObsidianNote
+                func(note)
+                if write: note.write_file()
             print("Finished processing articles!")
         return wrapper
     return decorator
 
-
 def rename_articles(
     limit: int = -1,
+    yield_all_files: bool = False,
     ):
     """ Decorator factory to rename articles in a vault.
 
@@ -73,17 +76,18 @@ def rename_articles(
             renamer = NoteRenamer() 
 
             # 'input' wrapper defined here so that we can call the function with the process_articles decorator
-            @process_articles(limit=limit, write=False)
-            def input_func_wrapper(obsidian_article: ObsidianNote):
-                new_name = func(obsidian_article)
+            @process_articles(limit=limit, write=False, yield_all_files=yield_all_files)
+            def input_func_wrapper(note: ObsidianNote):
+                # Call the decorated function: if it returns something, rename the file to this, otherwise do nothing.
+                new_name = func(note)
                 if new_name is not None:
                     new_name: str
 
                     # Strip the file extensions
-                    old_name, new_name = obsidian_article.filename.rsplit('.', 1)[0], new_name.rsplit('.', 1)[0]
+                    old_name, new_name = note.filename.rsplit('.', 1)[0], new_name.rsplit('.', 1)[0]
 
                     # Strip the file extension from the new name
-                    renamer.add(obsidian_article.filepath, old_name, new_name)
+                    renamer.add(note.filepath, old_name, new_name)
             
             # Call our wrapped function which will add a list of desired files to the renamer
             input_func_wrapper()
