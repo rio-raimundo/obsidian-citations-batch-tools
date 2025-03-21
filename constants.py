@@ -4,14 +4,14 @@ from pybtex.database.input import bibtex
 
 # MANUALLY SET THESE VARIABLES
 # Absoulte path to the vault
-vault_path = r"C:\Users\rodrai\Desktop\github-repos\phd-vault"
+vault_path = r"C:\Users\bitesizing\Desktop\github-projects\phd-vault"
 
 # List of folders where you don't want to search for articles (i.e. template folders)
 excluded_folders = [r"\misc\zotero"]
 
 # For some of the functionality, you will need to link to a .bib file, which can be generated automatically using the BetterBibtex plugin in Zotero.
 # ObsidianNotes can automatically get a reference to their BibTex data, which can make operations easier. Currently, this is only implemented if articles have a property containing the BibTex citation key. If this is not the case for your vault, there are ways to find the correct BibTex entry by searching for e.g. the title of the article.
-relative_bibtex_location = r"misc\zotero\library.bib"
+relative_bibtex_location = r"misc\zotero\My Library.bib"
 citation_key_property_name = "citation key"
 
 # List of tags which will be used to identify articles. If a page contains one of these tags, it is treated as an article.

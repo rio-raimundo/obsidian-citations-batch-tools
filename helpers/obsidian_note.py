@@ -251,7 +251,7 @@ class ObsidianNote():
             return {}
         
         entry: Entry = c.bibdata_entries[self.properties['citation key']]
-        return entry.fields
+        return entry
 
     def _flat_properties_from_dict(self, properties_dict: dict[str, str | list[str]]) -> list[str]:
         """Converts a properties dictionary to a list of 'flat' properties.
