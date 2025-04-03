@@ -47,7 +47,7 @@ class ObsidianNote():
         self.bibtex_data = self._get_bibtex_data()
 
     """ USER FUNCTIONS. """    
-    def insert_property_at_location(self, property: str, value, location: int = -1):
+    def insert_property_at_location(self, property: str, value, location: int = -1, override_existing: bool = False):
         """
         Insert a new property into the file. Defaults to the end of the properties. Updates self.properties object.
 
@@ -60,9 +60,11 @@ class ObsidianNote():
             logging.warning: If the property already exists inside dictionary.
         """
         # Check if property already exists inside dictionary, warn and return if so.
-        if property in self.properties:
-            logging.warning(f"Warning: '{self.filepath}' already has a property named '{property}'.")
-            return
+        if (property in self.properties):
+            if not override_existing:
+                logging.warning(f"Warning: '{self.filepath}' already has a property named '{property}'.")
+                return
+            old_property = self.properties.pop(property)
 
         # Convert the dictionary to a list, insert the new property, and convert back to a dictionary
         temp_properties_list = list(self.properties.items())
