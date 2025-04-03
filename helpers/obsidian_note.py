@@ -59,17 +59,17 @@ class ObsidianNote():
         Raises:
             logging.warning: If the property already exists inside dictionary.
         """
-        # Check if property already exists inside dictionary, warn and return if so.
-        if (property in self.properties):
-            if not override_existing:
-                logging.warning(f"Warning: '{self.filepath}' already has a property named '{property}'.")
-                return
-            old_property = self.properties.pop(property)
+        if self._check_existing_property(property, override_existing) is True: return
+        self._insert_property(property, value, location)
 
-        # Convert the dictionary to a list, insert the new property, and convert back to a dictionary
-        temp_properties_list = list(self.properties.items())
-        temp_properties_list.insert(location, (property, value)) # note when using list.insert, -1 is the last element of the list
-        self.properties = dict(temp_properties_list)  # will also update flat properties
+    def insert_property_near_another(self, property_label: str, property_value, property_near: str, insert_after: bool = True, override_existing: bool = False):
+        """ Insert a property near to another property. Defaults to after, but can  be set to before. """
+        if self._check_existing_property(property_label, override_existing) is True: return
+
+        # Get the location
+        nearby_location = list(self.properties.keys()).index(property_near)
+        new_location = nearby_location + 1 if insert_after else nearby_location
+        self._insert_property(property_label, property_value, new_location)
 
     def property_contains_value(self, property: str, value: str) -> bool:
         """
@@ -203,6 +203,21 @@ class ObsidianNote():
         
         # If properties found, return the properties and body text (excluding '---' lines)
         return self._properties_dict_from_flat(file_contents[1: line_idx]), file_contents[line_idx+1:], True
+    
+    def _check_existing_property(self, property_label: str, override_existing):
+        # Checks if property exists. If overwriting, returns the old property value
+        if (property in self.properties):
+            if not override_existing:
+                logging.warning(f"Warning: '{self.filepath}' already has a property named '{property}'.")
+                return True
+            return {property_label: self.properties.pop(property)}
+        return False
+    
+    def _insert_property(self, property_label: str, property_value: str, location: int):
+        # Convert the dictionary to a list, insert the new property, and convert back to a dictionary
+        temp_properties_list = list(self.properties.items())
+        temp_properties_list.insert(location, (property_label, property_value)) # note when using list.insert, -1 is the last element of the list
+        self.properties = dict(temp_properties_list)  # will also update flat properties
     
     def _properties_dict_from_flat(self, flat_properties: list[str]) -> dict[str, str | list[str]]:
         # Initialise properties dictionary
