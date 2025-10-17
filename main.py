@@ -13,14 +13,30 @@ import constants as c
 from helpers import ObsidianNote, process_articles, rename_articles
 
 
-# --- HELPER FUNCTIONS ---
-def format_author(name: Person) -> str:
-    return f"{name.first_names[0][0]}.{''.join(name.last_names)}".lower()
+def clean_abstract(s: str) -> str:
+    # define characters to remove/replace
+    invalid = r'[\\/:*?"<>|]'  # add others if needed
+    s2 = re.sub(invalid, '', s)
+    # also remove leading/trailing whitespace
+    s2 = s2.strip()
+    return f'"{s2}"'
 
-# - MAIN PROCESS FUNCTION TO POPULATE AUTHORS DICT --- 
+# - Remove any tags starting with author names
 @process_articles(limit=-1)
-def find_similar_authors(obsidian_note: ObsidianNote):
-    # Get our authors from the bibtex data as a list of Persons
-    btex_data: Entry = obsidian_note.bibtex_data
-    if 'author' not in btex_data.persons: return
-    authors: list[Person] = btex_data.persons['author']
+def remove_author_tags(obsidian_note: ObsidianNote):
+    # Get reference to abstract and add to properties
+    if 'abstract' not in obsidian_note.bibtex_data.fields: return
+    abstract = obsidian_note.bibtex_data.fields['abstract']
+    obsidian_note.properties['abstract'] = clean_abstract(abstract)
+
+    # Update current abstract field with dataview
+    found_abstract = False
+    for idx, line in enumerate(obsidian_note.body_text):
+        if line.startswith("> [!my-abstract]"):
+            found_abstract = True
+        elif found_abstract:
+            if line.startswith("> "): obsidian_note.body_text[idx] = "> ` = this.abstract`"
+            break
+
+
+remove_author_tags()
