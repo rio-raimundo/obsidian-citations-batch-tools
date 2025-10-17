@@ -23,20 +23,16 @@ def clean_abstract(s: str) -> str:
 
 # - Remove any tags starting with author names
 @process_articles(limit=-1)
-def remove_author_tags(obsidian_note: ObsidianNote):
-    # Get reference to abstract and add to properties
-    if 'abstract' not in obsidian_note.bibtex_data.fields: return
-    abstract = obsidian_note.bibtex_data.fields['abstract']
-    obsidian_note.properties['abstract'] = clean_abstract(abstract)
+def run_for_articles(obsidian_note: ObsidianNote):
+    if 'status' in obsidian_note.properties: return
 
-    # Update current abstract field with dataview
-    found_abstract = False
-    for idx, line in enumerate(obsidian_note.body_text):
-        if line.startswith("> [!my-abstract]"):
-            found_abstract = True
-        elif found_abstract:
-            if line.startswith("> "): obsidian_note.body_text[idx] = "> ` = this.abstract`"
-            break
+    tags = obsidian_note.properties['tags']
+    if "document/stub" in tags: 
+        status = "stub"
+        obsidian_note.properties['tags'].remove("document/stub")
+    else:
+        status = "complete"
+    
+    obsidian_note.insert_property_near_another("status", status, "tags", insert_after=False)
 
-
-remove_author_tags()
+run_for_articles()
